@@ -1,0 +1,31 @@
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/demo/ParentDashboard.tsx
+   4:10  warning  'Bot' is defined but never used                    @typescript-eslint/no-unused-vars
+  21:11  warning  'currentInput' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  32:9   warning  'startedCount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/demo/Shell.tsx
+  10:10  warning  'mockData' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/demo/modules/SmartDigfo.tsx
+  13:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/demo/modules/SmartDigvi.tsx
+  48:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/demo/modules/SmartEModul.tsx
+  19:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/sections/About.tsx
+  7:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/sections/Blog.tsx
+  17:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  30:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/imann/Documents/dev/projects/aruna-demo/components/sections/Hero.tsx
+  26:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+✖ 12 problems (4 errors, 8 warnings)
+
