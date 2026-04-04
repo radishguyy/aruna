@@ -1,44 +1,71 @@
 import React from 'react';
+import { BookOpen, Video, Camera, ArrowRight } from 'lucide-react';
 
 const Features = () => {
   return (
-    <section className="flex flex-col lg:flex-row max-w-[1400px] mx-auto">
-      {/* Left: Text */}
-      <div className="w-full lg:w-1/2 p-8 sm:p-12 md:p-16 lg:p-24 bg-white flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-gray-100">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[#006A50] mb-6 sm:mb-8">
-          Apa itu <span className="text-[#A7A6D8]">Aruna?</span>
-        </h2>
-        <p className="text-gray-600 mb-6 leading-relaxed text-sm sm:text-base">
-          Aruna (sebelumnya E-VR) adalah platform edukasi digital yang dirancang untuk mencegah kekerasan seksual melalui pendidikan anak usia dini. Kami mengintegrasikan Augmented Reality (AR), modul interaktif, dan panduan AI.
-        </p>
-        <p className="text-gray-600 mb-8 sm:mb-10 leading-relaxed text-sm sm:text-base">
-          Dengan metode visual yang ramah anak, kami membantu anak mengenali batasan tubuh dan otoritas diri sebagai langkah pencegahan sejak dini, tanpa menimbulkan rasa takut.
-        </p>
-        <button className="bg-[#006A50] text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full w-fit text-[10px] font-bold tracking-widest uppercase hover:bg-[#004f3c] transition-colors">
-          Jadwalkan Konsultasi
-        </button>
+    <section id="features">
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-2" style={{ fontFamily: '"Grandstander", cursive' }}>
+            Tiga Cara Seru Belajar!
+          </h2>
+          <span className="text-sm font-bold text-slate-500">Edukasi adaptif sesuai gaya belajar anak.</span>
+        </div>
       </div>
 
-      {/* Right: Color Grid */}
-      <div className="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2">
-        {/* Block 1 */}
-        <div className="bg-[#F9D308] p-10 sm:p-12 lg:p-16 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[250px]">
-          <h3 className="text-xl sm:text-2xl font-serif text-[#006A50] relative z-10">Smart <br /> E-Modul</h3>
-          <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-16 sm:h-16 bg-[#A7A6D8] rounded-full"></div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Card 1: Blue Theme */}
+        <div className="bg-white border-2 border-blue-100 rounded-[2rem] p-8 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-100/50 transition-all cursor-pointer group flex flex-col h-full relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+          <div className="flex justify-between items-start mb-8 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
+              <BookOpen size={28} />
+            </div>
+            <span className="text-[10px] font-black text-blue-600 tracking-widest uppercase bg-blue-100 px-3 py-1.5 rounded-full">Smart Digfo</span>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800 mb-3" style={{ fontFamily: '"Grandstander", cursive' }}>Buku Pintar Interaktif</h3>
+          <p className="text-slate-500 mb-8 flex-grow leading-relaxed">Belajar mengenal anggota tubuh dan batasan privasi lewat infografis visual yang bisa ditekan dan mengeluarkan suara.</p>
+          <div className="flex justify-end">
+            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+              <ArrowRight size={20} />
+            </div>
+          </div>
         </div>
-        {/* Block 2 */}
-        <div className="bg-[#DD6B66] p-10 sm:p-12 lg:p-16 flex flex-col items-center justify-center text-center relative min-h-[250px]">
-          <h3 className="text-xl sm:text-2xl font-serif text-white">Smart <br /> Digvi</h3>
+
+        {/* Card 2: Pink/Rose Theme */}
+        <div className="bg-white border-2 border-rose-100 rounded-[2rem] p-8 hover:border-rose-300 hover:shadow-2xl hover:shadow-rose-100/50 transition-all cursor-pointer group flex flex-col h-full relative overflow-hidden transform md:-translate-y-4">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+          <div className="flex justify-between items-start mb-8 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-200 group-hover:scale-110 transition-transform">
+              <Video size={28} />
+            </div>
+            <span className="text-[10px] font-black text-rose-600 tracking-widest uppercase bg-rose-100 px-3 py-1.5 rounded-full">Smart Digvi</span>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800 mb-3" style={{ fontFamily: '"Grandstander", cursive' }}>Kartun Edukasi Aman</h3>
+          <p className="text-slate-500 mb-8 flex-grow leading-relaxed">Tonton petualangan pahlawan Aruna melawan situasi tidak nyaman. Format playlist yang 100% bebas dari iklan pengganggu.</p>
+          <div className="flex justify-end">
+            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+              <ArrowRight size={20} />
+            </div>
+          </div>
         </div>
-        {/* Block 3 */}
-        <div className="bg-[#006A50] p-10 sm:p-12 lg:p-16 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[250px]">
-          <div className="absolute top-0 left-0 w-16 h-16 sm:w-24 sm:h-24 bg-[#DD6B66] rounded-br-full"></div>
-          <h3 className="text-xl sm:text-2xl font-serif text-white relative z-10">Safe Zone <br /> AR</h3>
-          <div className="absolute -bottom-4 right-4 sm:right-8 w-10 h-10 sm:w-12 sm:h-12 bg-[#F9D308] rounded-tl-full rounded-br-full rotate-45"></div>
-        </div>
-        {/* Block 4 */}
-        <div className="bg-[#BDE0D0] p-10 sm:p-12 lg:p-16 flex flex-col items-center justify-center text-center relative min-h-[250px]">
-          <h3 className="text-xl sm:text-2xl font-serif text-[#006A50]">EduGuide <br /> AI</h3>
+
+        {/* Card 3: Teal/Green Theme */}
+        <div className="bg-white border-2 border-teal-100 rounded-[2rem] p-8 hover:border-teal-300 hover:shadow-2xl hover:shadow-teal-100/50 transition-all cursor-pointer group flex flex-col h-full relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+          <div className="flex justify-between items-start mb-8 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-teal-500 text-white flex items-center justify-center shadow-lg shadow-teal-200 group-hover:scale-110 transition-transform">
+              <Camera size={28} />
+            </div>
+            <span className="text-[10px] font-black text-teal-600 tracking-widest uppercase bg-teal-100 px-3 py-1.5 rounded-full">Safe Zone AR</span>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800 mb-3" style={{ fontFamily: '"Grandstander", cursive' }}>Simulasi Realitas AR</h3>
+          <p className="text-slate-500 mb-8 flex-grow leading-relaxed">Gunakan kamera HP untuk memunculkan karakter 3D di dunia nyata dan berlatih cara menolak sentuhan yang tidak aman.</p>
+          <div className="flex justify-end">
+            <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-500 group-hover:bg-teal-500 group-hover:text-white transition-colors">
+              <ArrowRight size={20} />
+            </div>
+          </div>
         </div>
       </div>
     </section>

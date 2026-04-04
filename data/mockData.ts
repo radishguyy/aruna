@@ -404,8 +404,210 @@ export const mockData = {
       user_id: "u-1",
       child_id: "c-1",
       prompt: "Fachri tadi menangis karena tidak mau memakai baju renang di depan teman-temannya.",
-      response: "Wajar jika Fachri merasa tidak nyaman, Bunda. Ini adalah waktu yang tepat untuk memuji kesadarannya akan rasa malu dan mulai mengajarkan tentang bagian tubuh pribadi. Katakan kepadanya bahwa perasaannya itu baik, dan berikan opsi untuk berganti pakaian di tempat tertutup.",
+      response: "Wajar jika Fachri merasa tidak nyaman, Bunda. Ini adalah waktu yang tepat untuk memuji kesadarannya akan rasa malu dan mulai mengajarkan tentang bagian tubuh pribadi. Katakan kepadanya bahwa perasaannya itu baik, and berikan opsi untuk berganti pakaian di tempat tertutup.",
       sentiment_tag: "worried",
     }
-  ]
+  ],
+  pricing: [
+    {
+      id: "free",
+      name: "Free Version",
+      price: "Rp 0",
+      description: "Akses terbatas sebagai pengenalan produk",
+      features: ["Akses E-Modul Dasar", "Video Animasi Terbatas"]
+    },
+    {
+      id: "premium",
+      name: "Premium",
+      price: "Rp 10.000 – Rp 25.000",
+      period: "bulan",
+      description: "Akses penuh untuk keluarga terproteksi",
+      features: ["Free trial 7 hari", "Akses Semua E-Modul", "Simulasi Safe Zone AR", "Asisten EduGuide AI"]
+    },
+    {
+      id: "institution",
+      name: "Paket Institusi",
+      price: "Rp 500.000 – Rp 2.000.000",
+      period: "tahun",
+      description: "Solusi lengkap untuk sekolah dan yayasan",
+      features: ["Diskon Institusi", "Bundling", "Dashboard Guru/Sekolah", "Lisensi Multi-Siswa", "Kurikulum Kustom"]
+    }
+  ],
+  promotion_strategy: {
+    goals: "Upaya kami memberikan perlindungan maksimal dengan langkah awal yang mudah bagi siapa saja.",
+    items: ["Free trial 7 hari", "Diskon institusi", "Bundling"]
+  },
+  team: [
+    {
+      name: "Ahmad Fachri Nurfauzan",
+      role: "CEO",
+      main_task: "Mengarahkan strategi bisnis, pengambilan keputusan, menjalin kemitraan",
+      expertise: "Strategic thinking, leadership, edupreneurship",
+      skills: "Decision making, komunikasi, manajemen tim",
+      training: "Leadership Training, Business Model Canvas Workshop (P2MW)",
+      contribution: "Menentukan arah dan strategi bisnis, menjalin kemitraan, memastikan keberlanjutan usaha",
+      icon: "🚀",
+      color: "blue",
+      image_url: "/images/team/fachri.jpg"
+    },
+    {
+      name: "Muhamad Nur Iman",
+      role: "CTO",
+      main_task: "Mengembangkan aplikasi AR, integrasi sistem, monitoring performa",
+      expertise: "Pengembangan sistem informasi, AR development",
+      skills: "JavaScript, SQL, Unity/ARCore, UI/UX Design",
+      training: "Workshop AR/VR Development, Coding Bootcamp JavaScript & SQL",
+      contribution: "Mengembangkan dan mengelola aplikasi ARUNA, memastikan performa dan inovasi teknologi",
+      icon: "💻",
+      color: "teal",
+      image_url: "/images/team/iman.jpg"
+    },
+    {
+      name: "Vina Alviaturohmah",
+      role: "CMO",
+      main_task: "Strategi pemasaran, branding, kampanye edukasi",
+      expertise: "Analisis pasar, digital marketing",
+      skills: "Content creation, social media management, campaign strategy",
+      training: "Pelatihan Digital Marketing & Social Media Analytics",
+      contribution: "Meningkatkan brand awareness, menarik pengguna baru, mengelola campaign edukasi",
+      icon: "🎨",
+      color: "pink",
+      image_url: "/images/team/vina.jpg"
+    },
+    {
+      name: "Mufti Mumtaz Maulana",
+      role: "COO",
+      main_task: "Operasional produk, quality control, implementasi program",
+      expertise: "Psikologi anak, manajemen operasional",
+      skills: "Program implementation, evaluasi produk, problem solving",
+      training: "Pelatihan Child Development, Program Evaluation Workshop",
+      contribution: "Mengelola operasional produk, memastikan kualitas konten edukasi sesuai perkembangan anak",
+      icon: "⚙️",
+      color: "orange",
+      image_url: "/images/team/mufti.jpg"
+    },
+    {
+      name: "Afrah Suci Ramadhani",
+      role: "CFO",
+      main_task: "Manajemen keuangan, budgeting, laporan keuangan",
+      expertise: "Akuntansi, financial planning",
+      skills: "Financial reporting, budgeting, cost analysis",
+      training: "Pelatihan Keuangan UMKM, Laporan Keuangan Berbasis Standar",
+      contribution: "Mengelola keuangan usaha, menyusun laporan, menjaga efisiensi biaya operasional",
+      icon: "📈",
+      color: "green",
+      image_url: "/images/team/afrah.jpg"
+    }
+  ],
+  aboutSection: {
+    hero: {
+      tag: "Tentang Aruna",
+      title: "Membentuk Generasi Pemberani, Bukan Korban.",
+      description: "Data Komnas PA mencatat 2.848 kasus kekerasan terhadap anak, dimana ironisnya 80% pelaku berasal dari lingkungan terdekat. Kami hadir untuk memutus rantai tersebut melalui edukasi perlindungan diri yang menyenangkan sejak dini (usia 3-6 tahun)."
+    },
+    noblePurpose: {
+      title: "Tujuan Mulia Kami",
+      description: "Aruna bukan sekadar pencetak profit, melainkan representasi \"Cahaya Fajar\" untuk awal baru dalam perlindungan anak. Kami memberdayakan literasi seksual dan batasan tubuh secara aman, interaktif, dan sesuai usia.",
+      sdgs: ["SDGs 3", "SDGs 4", "SDGs 5", "SDGs 16"]
+    },
+    marketPotential: {
+      title: "Potensi & Fokus Pasar",
+      description: "Kami menyasar edukasi preventif 46 juta orang tua anak di Indonesia dengan pendekatan Augmented Reality (AR) termodern agar topik sensitif menjadi lebih mudah dipahami oleh si kecil.",
+      stats: [
+        { label: "TAM", value: "46Jt", color: "rose" },
+        { label: "SAM", value: "27.6Jt", color: "purple" },
+        { label: "SOM", value: "276K", color: "pink" }
+      ]
+    },
+    story: {
+      title: "Berawal Dari Kepedulian.",
+      paragraphs: [
+        "Pertama kali dirintis dengan nama E-AR (Education Virtual Reality) pada Juli 2025, kami berevolusi.",
+        "Pada 29 Maret 2026, kami melakukan rebranding menjadi ARUNA (Cahaya Fajar) untuk memperkuat identitas sebagai solusi preventif kekerasan anak melalui edukasi Edutech yang interaktif."
+      ],
+      milestones: [
+        { year: "2026", label: "Rebranding", color: "orange" },
+        { year: "UNNES", label: "Inkubator / P2MW", color: "orange" }
+      ]
+    }
+  },
+  articles: [
+    {
+      id: "a-1",
+      slug: "cara-membahas-batasan-tubuh",
+      title: "Cara Membahas Batasan Tubuh Tanpa Canggung",
+      description: "Pelajari metode praktis untuk mengajarkan anak tentang sentuhan aman dan tidak aman di rumah secara natural.",
+      content: "Pendidikan seksual pada anak usia dini masih menjadi isu yang cenderung diabaikan. Sebagian besar orang tua menganggap hal ini tabu.\n\nPadahal, pendidikan seksual yang diberikan secara bertahap sangat penting. Untuk memulainya, ajarkan anak nama-nama anggota tubuh secara benar, bukan dengan sebutan kiasan. Beritahu mereka bagian mana yang boleh disentuh dan oleh siapa (misalnya, hanya orang tua atau dokter saat ada orang tua).\n\nKita juga perlu mengajarkan konsep 'berani bilang tidak' atau lari jika ada yang mencoba menyentuh area pribadi mereka. Edukasi ini bisa disisipkan melalui cerita dongeng atau menggunakan aplikasi interaktif seperti Aruna yang menyajikan konsep-konsep ini dalam bentuk animasi yang mudah dicerna oleh anak-anak.",
+      category: "PANDUAN ORANG TUA",
+      categoryColor: "orange", // Used to map to colors like text-orange-500, bg-orange-50
+      date: "3 April 2026",
+      author: "Tim Psikologi Aruna",
+      imageUrl: "https://images.unsplash.com/photo-1602052577122-f73b9710adba?auto=format&fit=crop&q=80",
+    },
+    {
+      id: "a-2",
+      slug: "meningkatkan-daya-ingat-anak",
+      title: "Meningkatkan Daya Ingat Anak Lewat Animasi",
+      description: "Evaluasi kami tentang bagaimana penceritaan digital dapat meningkatkan pemahaman aturan keamanan.",
+      content: "Anak-anak pada era digital cenderung lebih mudah memahami pembelajaran berbasis visual, interaktif, dan pengalaman langsung (experiential learning).\n\nMedia pembelajaran konvensional seringkali kurang menarik bagi anak-anak usia 3-6 tahun. Oleh karena itu, penggunaan teknologi seperti Augmented Reality (AR) dan video animasi sangat efektif. Visual yang bergerak dan cerita yang menarik membantu materi 'menempel' lebih kuat di memori anak.\n\nDalam sebuah uji coba, anak-anak yang belajar melalui simulasi AR menunjukkan retensi informasi 60% lebih baik dibandingkan mereka yang hanya mendengar ceramah. Mereka lebih paham kapan harus melapor ke orang tua ketika menghadapi situasi yang janggal.",
+      category: "EDUTECH",
+      categoryColor: "blue",
+      date: "25 Maret 2026",
+      author: "Andi (CTO Aruna)",
+      imageUrl: "https://images.unsplash.com/photo-1587691592099-24045742c181?auto=format&fit=crop&q=80",
+    },
+    {
+      id: "a-3",
+      slug: "mengenali-perubahan-perilaku-anak",
+      title: "Mengenali Perubahan Perilaku Anak",
+      description: "Tanda-tanda yang harus diperhatikan orang tua, dan bagaimana cara membuka komunikasi yang aman dengan anak.",
+      content: "Sebagai orang tua, kita harus peka terhadap perubahan drastis pada perilaku anak. Apakah tiba-tiba anak menjadi pendiam, mudah menangis, atau takut pada orang tertentu?\n\nJika menemukan tanda-tanda ini, jangan langsung memaksa anak untuk bercerita. Ciptakan ruang yang aman. Katakan, 'Bunda perhatikan belakangan ini adik agak sedih. Kalau ada yang mengganggu, adik selalu bisa cerita ke Bunda, ya. Bunda tidak akan marah.'\n\nHal paling penting adalah membangun kepercayaan, sehingga anak tahu bahwa lingkungan terdekatnya adalah tempat berlindung yang paling aman.",
+      category: "PSIKOLOGI ANAK",
+      categoryColor: "teal",
+      date: "12 Maret 2026",
+      author: "Vina (CMO Aruna)",
+      imageUrl: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&q=80",
+    }
+  ],
+  teacherStudents: [
+    { id: "ts-1", name: "Aisyah Putri", age: 5, gender: "female", class: "Kelas A", modulesCompleted: 8, totalModules: 13, lastActive: "2026-04-04T09:30:00Z", status: "active", avatar: "AP" },
+    { id: "ts-2", name: "Budi Santoso", age: 4, gender: "male", class: "Kelas A", modulesCompleted: 5, totalModules: 13, lastActive: "2026-04-04T08:15:00Z", status: "active", avatar: "BS" },
+    { id: "ts-3", name: "Citra Dewi", age: 5, gender: "female", class: "Kelas A", modulesCompleted: 13, totalModules: 13, lastActive: "2026-04-03T14:00:00Z", status: "completed", avatar: "CD" },
+    { id: "ts-4", name: "Dimas Prasetyo", age: 4, gender: "male", class: "Kelas B", modulesCompleted: 3, totalModules: 13, lastActive: "2026-04-04T10:00:00Z", status: "active", avatar: "DP" },
+    { id: "ts-5", name: "Elsa Maharani", age: 5, gender: "female", class: "Kelas B", modulesCompleted: 10, totalModules: 13, lastActive: "2026-04-03T11:45:00Z", status: "active", avatar: "EM" },
+    { id: "ts-6", name: "Fajar Ramadhan", age: 6, gender: "male", class: "Kelas B", modulesCompleted: 2, totalModules: 13, lastActive: "2026-04-02T09:00:00Z", status: "inactive", avatar: "FR" },
+    { id: "ts-7", name: "Gita Ananda", age: 5, gender: "female", class: "Kelas A", modulesCompleted: 7, totalModules: 13, lastActive: "2026-04-04T07:30:00Z", status: "active", avatar: "GA" },
+    { id: "ts-8", name: "Hadi Wijaya", age: 4, gender: "male", class: "Kelas A", modulesCompleted: 11, totalModules: 13, lastActive: "2026-04-04T08:45:00Z", status: "active", avatar: "HW" },
+  ],
+  teacherActivities: [
+    { id: "ta-1", studentName: "Aisyah Putri", avatar: "AP", moduleName: "Ini Tubuhku", status: "completed", timestamp: "2026-04-04T09:30:00Z", score: 95 },
+    { id: "ta-2", studentName: "Budi Santoso", avatar: "BS", moduleName: "Berani Bilang Tidak", status: "in_progress", timestamp: "2026-04-04T08:15:00Z", score: null },
+    { id: "ta-3", studentName: "Dimas Prasetyo", avatar: "DP", moduleName: "Mengenal Perasaan", status: "completed", timestamp: "2026-04-04T10:00:00Z", score: 80 },
+    { id: "ta-4", studentName: "Gita Ananda", avatar: "GA", moduleName: "Sentuhan Aman & Tidak Aman", status: "completed", timestamp: "2026-04-04T07:30:00Z", score: 100 },
+    { id: "ta-5", studentName: "Hadi Wijaya", avatar: "HW", moduleName: "Lari, Teriak, Cerita!", status: "in_progress", timestamp: "2026-04-04T08:45:00Z", score: null },
+    { id: "ta-6", studentName: "Elsa Maharani", avatar: "EM", moduleName: "Rahasia Baik & Buruk", status: "completed", timestamp: "2026-04-03T11:45:00Z", score: 90 },
+    { id: "ta-7", studentName: "Citra Dewi", avatar: "CD", moduleName: "Pahlawan Pakaian Dalam", status: "completed", timestamp: "2026-04-03T14:00:00Z", score: 88 },
+    { id: "ta-8", studentName: "Fajar Ramadhan", avatar: "FR", moduleName: "Ini Tubuhku", status: "in_progress", timestamp: "2026-04-02T09:00:00Z", score: null },
+  ],
+  teacherNotifications: [
+    { id: "tn-1", title: "Evaluasi Bulanan", message: "Segera jadwalkan sesi evaluasi bulanan dengan orang tua siswa kelas 1.", type: "warning", read: false, timestamp: "2026-04-04T08:00:00Z" },
+    { id: "tn-2", title: "Materi Baru Tersedia", message: "Modul tambahan \"Kewaspadaan Digital\" kini dapat diakses di menu Materi Ajar.", type: "info", read: false, timestamp: "2026-04-03T12:00:00Z" },
+    { id: "tn-3", title: "Citra Dewi Selesai Semua Modul", message: "Selamat! Murid Citra Dewi telah menyelesaikan seluruh 13 modul edukasi. Pertimbangkan memberikan sertifikat.", type: "success", read: false, timestamp: "2026-04-03T14:05:00Z" },
+    { id: "tn-4", title: "Lisensi Akan Berakhir", message: "Lisensi institusi PAUD Mentari akan berakhir dalam 90 hari. Hubungi admin untuk perpanjangan.", type: "warning", read: true, timestamp: "2026-04-01T09:00:00Z" },
+  ],
+  teacherResources: [
+    { id: "tr-1", title: "Panduan Mengenal Tubuh", description: "Panduan lengkap untuk guru dalam mengajarkan pengenalan anggota tubuh kepada anak usia 3-6 tahun.", category: "Panduan Guru", type: "pdf", fileSize: "2.4 MB", downloadCount: 156 },
+    { id: "tr-2", title: "Flashcard Batasan Diri", description: "Set kartu bergambar untuk aktivitas kelas tentang batasan sentuhan aman dan tidak aman.", category: "Aktivitas Kelas", type: "pdf", fileSize: "8.1 MB", downloadCount: 203 },
+    { id: "tr-3", title: "Video: Teknik Bercerita", description: "Tutorial video untuk guru tentang cara menyampaikan materi sensitif melalui storytelling.", category: "Video Pelatihan", type: "video", fileSize: "124 MB", downloadCount: 89 },
+    { id: "tr-4", title: "Worksheet Perasaan", description: "Lembar kerja interaktif untuk membantu anak mengenali dan mengekspresikan perasaan mereka.", category: "Aktivitas Kelas", type: "pdf", fileSize: "1.8 MB", downloadCount: 312 },
+    { id: "tr-5", title: "Rubrik Penilaian Modul", description: "Template rubrik penilaian untuk mengukur pemahaman anak pada setiap modul edukasi.", category: "Panduan Guru", type: "xlsx", fileSize: "540 KB", downloadCount: 67 },
+    { id: "tr-6", title: "Poster Zona Aman", description: "Poster A3 bergambar untuk ditempel di kelas tentang zona aman dan zona bahaya.", category: "Materi Cetak", type: "pdf", fileSize: "5.2 MB", downloadCount: 178 },
+  ],
+  contact_info: {
+    email: "halo.aruna.edu@gmail.com",
+    phone: "0895-0992-2574",
+    address: "Semarang, Jawa Tengah (UNNES)",
+    whatsapp: "6289509922574",
+    web3forms_key: "9e13886b-686e-43f5-9d0c-c415d116debc" // Placeholder for Web3Forms
+  }
 };

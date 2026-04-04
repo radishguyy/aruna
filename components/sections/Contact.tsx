@@ -31,12 +31,12 @@ const Contact = () => {
         <div className="w-full md:w-1/2 z-10">
           <form className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col gap-4">
             <div>
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nama</label>
-              <input type="text" className="w-full border-b-2 border-gray-200 py-2 focus:outline-none focus:border-[#DD6B66] bg-transparent" placeholder="Ketik nama Anda..." />
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block" htmlFor="contactName">Nama</label>
+              <input id="contactName" name="contactName" autoComplete="off" type="text" className="w-full border-b-2 border-gray-200 py-2 focus:outline-none focus:border-[#DD6B66] bg-transparent" placeholder="Ketik nama Anda..." />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Pesan</label>
-              <textarea className="w-full border-b-2 border-gray-200 py-2 focus:outline-none focus:border-[#DD6B66] bg-transparent resize-none" rows={3} placeholder="Apa yang ingin Anda tanyakan?"></textarea>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block" htmlFor="contactMessage">Pesan</label>
+              <textarea id="contactMessage" name="contactMessage" autoComplete="off" className="w-full border-b-2 border-gray-200 py-2 focus:outline-none focus:border-[#DD6B66] bg-transparent resize-none" rows={3} placeholder="Apa yang ingin Anda tanyakan?"></textarea>
             </div>
             <button type="button" className="mt-4 bg-[#DD6B66] text-white font-bold py-4 rounded-xl hover:bg-rose-500 transition-colors">
               Kirim Pesan

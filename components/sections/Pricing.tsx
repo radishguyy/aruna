@@ -1,50 +1,84 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import Link from 'next/link';
+import { CheckCircle2, Star } from 'lucide-react';
+import { mockData } from '@/data/mockData';
 
 const Pricing = () => {
   return (
-    <section id="pricing" className="bg-[#F9FAFB] py-16 sm:py-24 border-t border-gray-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[#006A50] mb-4">
-            Pilihan <span className="text-[#DD6B66]">Program</span>
-          </h2>
-          <p className="text-gray-500 text-sm sm:text-base">Edukasi yang dapat diakses oleh setiap keluarga dan institusi.</p>
-        </div>
+    <section id="pricing">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-800 mb-4" style={{ fontFamily: '"Grandstander", cursive' }}>
+          Pilihan Paket Belajar
+        </h2>
+        <p className="text-slate-500">
+          Mulai dari akses gratis hingga sistem sekolah yang komprehensif. {mockData.promotion_strategy.goals}
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-gray-200 shadow-sm bg-white">
-          {/* Free */}
-          <div className="p-8 sm:p-12 border-b md:border-b-0 md:border-r border-gray-200">
-            <h3 className="text-xl sm:text-2xl font-serif text-[#006A50] mb-2">Gratis</h3>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Rp 0</div>
-            <ul className="space-y-4 mb-8 text-sm text-gray-600">
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#006A50] shrink-0 mt-0.5" /> Akses E-Modul Dasar</li>
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#006A50] shrink-0 mt-0.5" /> Video Animasi Terbatas</li>
-            </ul>
-          </div>
-          {/* Premium */}
-          <div className="p-8 sm:p-12 border-b md:border-b-0 md:border-r border-gray-200 bg-[#006A50] text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-[#F9D308] rounded-bl-full"></div>
-            <h3 className="text-xl sm:text-2xl font-serif mb-2 relative z-10">Premium</h3>
-            <div className="text-2xl sm:text-3xl font-bold mb-6 relative z-10">Rp 15.000<span className="text-sm font-normal">/bln</span></div>
-            <ul className="space-y-4 mb-8 text-sm text-gray-200 relative z-10">
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#F9D308] shrink-0 mt-0.5" /> Akses Semua E-Modul</li>
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#F9D308] shrink-0 mt-0.5" /> Simulasi Safe Zone AR</li>
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#F9D308] shrink-0 mt-0.5" /> Asisten EduGuide AI</li>
-            </ul>
-          </div>
-          {/* B2B */}
-          <div className="p-8 sm:p-12 relative overflow-hidden">
-            <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-[#BDE0D0] rounded-tl-full opacity-50"></div>
-            <h3 className="text-xl sm:text-2xl font-serif text-[#006A50] mb-2">Institusi</h3>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Custom</div>
-            <ul className="space-y-4 mb-8 text-sm text-gray-600 relative z-10">
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#006A50] shrink-0 mt-0.5" /> Dashboard Guru/Sekolah</li>
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#006A50] shrink-0 mt-0.5" /> Lisensi Multi-Siswa</li>
-              <li className="flex gap-3 items-start"><Check size={18} className="text-[#006A50] shrink-0 mt-0.5" /> Kurikulum Kustom</li>
-            </ul>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {mockData.pricing.map((plan) => {
+          const isPremium = plan.id === 'premium';
+          const isInstitution = plan.id === 'institution';
+
+          return (
+            <div
+              key={plan.id}
+              className={`rounded-[2.5rem] p-8 border-2 flex flex-col relative overflow-hidden transition-all duration-300 ${isPremium
+                  ? 'bg-gradient-to-b from-orange-500 to-orange-600 border-orange-200 text-white shadow-2xl shadow-orange-500/30 transform md:-translate-y-6'
+                  : 'bg-white border-gray-100 shadow-sm'
+                }`}
+            >
+              {/* Decorative Stars for Premium */}
+              {isPremium && (
+                <>
+                  <Star size={64} className="absolute -top-4 -right-4 text-orange-400 opacity-50" fill="currentColor" />
+                  <div className="absolute top-4 right-4 bg-yellow-300 text-yellow-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">
+                    Super Aruna
+                  </div>
+                </>
+              )}
+
+              <h3 className={`text-lg font-bold uppercase tracking-widest mb-2 ${isPremium ? 'text-orange-100 mt-2' : 'text-slate-500'}`}>
+                {plan.name}
+              </h3>
+
+              <div className={`text-4xl font-black mb-8 drop-shadow-sm ${isPremium ? 'text-white' : 'text-slate-800'}`} style={{ fontFamily: '"Grandstander", cursive' }}>
+                {plan.price.split(' ')[1] || plan.price}
+                {plan.period && <span className={`text-lg font-normal ${isPremium ? 'text-white/80' : 'text-slate-400'}`}>/{plan.period === 'bulan' ? 'bln' : 'thn'}</span>}
+              </div>
+
+              {plan.description && (
+                <p className={`text-sm mb-6 italic ${isPremium ? 'text-orange-50' : 'text-slate-500'}`}>
+                  {plan.description}
+                </p>
+              )}
+
+              <ul className="space-y-4 mb-8 flex-grow relative z-10">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className={`flex items-center gap-3 text-sm font-medium ${isPremium ? 'text-white' : 'text-slate-600'}`}>
+                    <CheckCircle2
+                      size={isPremium ? 20 : 18}
+                      className={isPremium ? 'text-yellow-300' : isInstitution ? 'text-indigo-500' : 'text-green-500'}
+                    />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href={isInstitution ? "#contact" : "/auth/register"}
+                className={`block text-center w-full py-4 rounded-full font-bold text-sm transition-all duration-300 ${isPremium
+                    ? 'bg-white text-orange-600 hover:scale-105 shadow-lg'
+                    : isInstitution
+                      ? 'bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+              >
+                {isPremium ? 'Berlangganan Sekarang' : isInstitution ? 'Hubungi Tim Sales' : 'Buat Akun Gratis'}
+              </Link>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

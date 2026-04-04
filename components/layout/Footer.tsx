@@ -1,57 +1,54 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { Mail, Phone, Heart } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer id="contact" className="bg-[#BDE0D0] pt-16 sm:pt-20 pb-8 sm:pb-10 border-t-[16px] border-[#006A50]">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12">
+    <footer id="contact" className="bg-white border-t border-gray-200 pt-32 pb-8">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-16">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 mb-12 sm:mb-16 border border-[#006A50]/20 bg-white">
-          {/* Left Image / Mascot area */}
-          <div className="bg-[#F9D308] relative min-h-[250px] sm:min-h-[300px] flex items-center justify-center p-8 sm:p-12 overflow-hidden border-b md:border-b-0 md:border-r border-[#006A50]/20">
-            <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-[#DD6B66] rounded-bl-full mix-blend-multiply opacity-50"></div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[#006A50] relative z-10 leading-tight">
-              Memberdayakan <br /> generasi <br /> masa depan.
-            </h2>
-          </div>
-
-          {/* Right Form & Links */}
-          <div className="flex flex-col justify-center p-8 sm:p-12 bg-white">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-4 mb-4">
-              <div>
-                <h4 className="font-bold text-[#006A50] mb-3 sm:mb-4 text-sm">Tautan</h4>
-                <ul className="space-y-2 sm:space-y-3 text-sm text-[#006A50]/80">
-                  <li><a href="#" className="hover:text-[#DD6B66]">Syarat & Ketentuan</a></li>
-                  <li><a href="#" className="hover:text-[#DD6B66]">Kebijakan Privasi</a></li>
-                  <li><a href="#" className="hover:text-[#DD6B66]">Keamanan</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold text-[#006A50] mb-3 sm:mb-4 text-sm">Berlangganan</h4>
-                <div className="flex flex-col xl:flex-row bg-white rounded-xl xl:rounded-full p-1 border border-[#006A50]/30 focus-within:border-[#006A50] gap-2 xl:gap-0">
-                  <input
-                    type="email"
-                    placeholder="Alamat email"
-                    className="w-full bg-transparent px-4 py-2 text-sm outline-none text-[#006A50] placeholder-[#006A50]/50"
-                  />
-                  <button className="bg-[#006A50] text-white px-6 py-2.5 xl:py-2 rounded-full xl:rounded-full text-[10px] font-bold tracking-widest uppercase hover:bg-[#004f3c] transition-colors w-full xl:w-auto">
-                    Kirim
-                  </button>
-                </div>
-                <div className="flex gap-4 mt-6 sm:mt-8 text-[#006A50]">
-                  {/* Social icons removed for fix */}
-                </div>
-              </div>
+          <div className="text-center md:text-left">
+            <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500 tracking-wide uppercase mb-4 block" style={{ fontFamily: '"Grandstander", cursive' }}>
+              ARUNA
+            </span>
+            <p className="text-slate-500 max-w-xs text-sm leading-relaxed mb-6">
+              Platform edukasi inovatif sebagai solusi preventif kekerasan seksual anak usia dini di era digital.
+            </p>
+            <div className="flex items-center justify-center md:justify-start gap-4">
+              <a href="#" className="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-colors">
+                <Heart size={18} />
+              </a>
             </div>
           </div>
+
+          <div className="bg-slate-50 rounded-3xl p-8 border border-gray-100 max-w-sm w-full">
+            <h4 className="font-bold text-slate-800 mb-6 text-center md:text-left">Butuh Bantuan / Kemitraan?</h4>
+            <div className="space-y-4">
+              <a href="mailto:halo@aruna.id" className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
+                <div className="bg-slate-100 p-2.5 rounded-xl text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><Mail size={20} /></div>
+                <div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email Resmi</div>
+                  <div className="text-sm font-bold text-slate-700">ahmadfahr2004@gmail.com</div>
+                </div>
+              </a>
+              <a href="tel:089509922574" className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
+                <div className="bg-slate-100 p-2.5 rounded-xl text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><Phone size={20} /></div>
+                <div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">WhatsApp / Telepon</div>
+                  <div className="text-sm font-bold text-slate-700">0895-0992-2574</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center pt-6 sm:pt-8 border-t border-[#006A50]/20 text-xs text-[#006A50]/60">
-          <div className="flex items-center gap-2 mb-4 md:mb-0">
-            <Shield size={16} />
-            <span className="font-serif font-bold tracking-wider">ARUNA EDU</span>
+        <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 font-medium">
+          <p>© {new Date().getFullYear()} Aruna Edu & Tim Pengusul UNNES.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-orange-500 transition-colors">Kebijakan Privasi</a>
+            <a href="#" className="hover:text-orange-500 transition-colors">Syarat Ketentuan</a>
           </div>
-          <p className="text-center md:text-left">© 2026 Universitas Negeri Semarang. Hak Cipta Dilindungi.</p>
         </div>
       </div>
     </footer>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Grandstander } from "next/font/google";
 import "./globals.css";
-import Navigation from "@/components/layout/Navigation";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,7 +29,6 @@ export default function RootLayout({
       className={`${inter.variable} ${grandstander.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <Navigation />
         {children}
       </body>
     </html>
