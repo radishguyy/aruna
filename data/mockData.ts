@@ -414,23 +414,31 @@ export const mockData = {
       name: "Free Version",
       price: "Rp 0",
       description: "Akses terbatas sebagai pengenalan produk",
-      features: ["Akses E-Modul Dasar", "Video Animasi Terbatas"]
+      features: ["Akses 1–2 Modul Edukasi Dasar", "Preview AR Content", "Pengenalan Produk"]
+    },
+    {
+      id: "standard",
+      name: "Paket Standar",
+      price: "Rp 25.000",
+      period: "bulan",
+      description: "Premium Individu untuk akses lebih luas",
+      features: ["Modul Edukasi Lengkap", "Beberapa Simulasi AR", "Smart AR Digfo Terbatas"]
     },
     {
       id: "premium",
-      name: "Premium",
-      price: "Rp 10.000 – Rp 25.000",
+      name: "Paket Premium",
+      price: "Rp 50.000",
       period: "bulan",
-      description: "Akses penuh untuk keluarga terproteksi",
-      features: ["Free trial 7 hari", "Akses Semua E-Modul", "Simulasi Safe Zone AR", "Asisten EduGuide AI"]
+      description: "Full Access untuk perlindungan maksimal",
+      features: ["Semua Modul Edukasi", "Simulasi AR Immersive", "Smart AR Digfo & Digvi Lengkap", "Parent & Teacher Guide"]
     },
     {
       id: "institution",
       name: "Paket Institusi",
-      price: "Rp 500.000 – Rp 2.000.000",
-      period: "tahun",
-      description: "Solusi lengkap untuk sekolah dan yayasan",
-      features: ["Diskon Institusi", "Bundling", "Dashboard Guru/Sekolah", "Lisensi Multi-Siswa", "Kurikulum Kustom"]
+      price: "Rp 200.000",
+      period: "bulan",
+      description: "Solusi B2B untuk sekolah dan yayasan",
+      features: ["Lisensi Penggunaan PAUD/TK/Sekolah", "Program Edukasi Institusi", "Dashboard Monitoring Guru", "Materi Cetak & Digital"]
     }
   ],
   promotion_strategy: {
@@ -522,7 +530,7 @@ export const mockData = {
     story: {
       title: "Berawal Dari Kepedulian.",
       paragraphs: [
-        "Pertama kali dirintis dengan nama E-AR (Education Virtual Reality) pada Juli 2025, kami berevolusi.",
+        "Pertama kali dirintis dengan nama E-VR (Education Virtual Reality) pada Juli 2025, kami berevolusi.",
         "Pada 29 Maret 2026, kami melakukan rebranding menjadi ARUNA (Cahaya Fajar) untuk memperkuat identitas sebagai solusi preventif kekerasan anak melalui edukasi Edutech yang interaktif."
       ],
       milestones: [

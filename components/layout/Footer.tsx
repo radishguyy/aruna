@@ -1,9 +1,10 @@
 import React from 'react';
 import { Mail, Phone, Heart } from 'lucide-react';
+import { mockData } from '@/data/mockData';
 
 const Footer = () => {
   return (
-    <footer id="contact" className="bg-white border-t border-gray-200 pt-32 pb-8">
+    <footer id="contact" className="bg-white border-t border-gray-200 pt-32 pb-8 relative -z-10">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-16">
 
@@ -24,18 +25,18 @@ const Footer = () => {
           <div className="bg-slate-50 rounded-3xl p-8 border border-gray-100 max-w-sm w-full">
             <h4 className="font-bold text-slate-800 mb-6 text-center md:text-left">Butuh Bantuan / Kemitraan?</h4>
             <div className="space-y-4">
-              <a href="mailto:halo@aruna.id" className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
+              <a href={`mailto:${mockData.contact_info.email}`} className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
                 <div className="bg-slate-100 p-2.5 rounded-xl text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><Mail size={20} /></div>
                 <div>
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email Resmi</div>
-                  <div className="text-sm font-bold text-slate-700">ahmadfahr2004@gmail.com</div>
+                  <div className="text-sm font-bold text-slate-700">{mockData.contact_info.email}</div>
                 </div>
               </a>
-              <a href="tel:089509922574" className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
+              <a href={`https://wa.me/${mockData.contact_info.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
                 <div className="bg-slate-100 p-2.5 rounded-xl text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><Phone size={20} /></div>
                 <div>
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">WhatsApp / Telepon</div>
-                  <div className="text-sm font-bold text-slate-700">0895-0992-2574</div>
+                  <div className="text-sm font-bold text-slate-700">{mockData.contact_info.phone}</div>
                 </div>
               </a>
             </div>

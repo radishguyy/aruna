@@ -23,7 +23,7 @@ export default function ContactPage() {
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormStatus('loading');
-    
+
     const formData = new FormData(e.currentTarget);
     formData.append("access_key", contactInfo.web3forms_key);
     formData.append("subject", `Aruna Contact Form: ${(formData.get('contactSubject') as string) || 'New Message'}`);
@@ -56,15 +56,15 @@ export default function ContactPage() {
       <main className="max-w-[1200px] mx-auto px-4 md:px-6 py-16 md:py-24">
 
         <div className="text-center mb-16">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold text-slate-800 mb-6" 
+            className="text-4xl md:text-6xl font-bold text-slate-800 mb-6"
             style={{ fontFamily: '"Grandstander", cursive' }}
           >
             Hubungi Kami
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto"
@@ -76,7 +76,7 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
           {/* Contact Info */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -123,9 +123,9 @@ export default function ContactPage() {
                 <MessageCircle size={18} /> Support Chat
               </div>
               <p className="text-slate-600 mb-6">Butuh respon cepat? Chat melalui WhatsApp untuk bantuan langsung.</p>
-              <a 
-                href={`https://wa.me/${contactInfo.whatsapp}`} 
-                target="_blank" 
+              <a
+                href={`https://wa.me/${contactInfo.whatsapp}`}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-green-500 text-white px-8 py-3 rounded-full font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-200"
               >
@@ -135,17 +135,17 @@ export default function ContactPage() {
           </motion.div>
 
           {/* Contact Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="bg-white rounded-[3rem] p-8 md:p-12 border-2 border-gray-100 shadow-sm"
           >
             <h2 className="text-3xl font-bold text-slate-800 mb-8" style={{ fontFamily: '"Grandstander", cursive' }}>Kirim Pesan</h2>
-            
+
             <AnimatePresence mode='wait'>
               {formStatus === 'success' ? (
-                <motion.div 
+                <motion.div
                   key="success"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -154,7 +154,7 @@ export default function ContactPage() {
                   <CheckCircle2 size={64} className="text-emerald-500 mx-auto mb-4" />
                   <h3 className="text-2xl font-bold text-emerald-900 mb-2">Terkirim!</h3>
                   <p className="text-emerald-700">{resultMessage}</p>
-                  <button 
+                  <button
                     onClick={() => setFormStatus('idle')}
                     className="mt-6 text-emerald-600 font-bold hover:underline"
                   >
@@ -162,65 +162,65 @@ export default function ContactPage() {
                   </button>
                 </motion.div>
               ) : (
-                <motion.form 
+                <motion.form
                   key="form"
-                  onSubmit={handleFormSubmit} 
+                  onSubmit={handleFormSubmit}
                   className="space-y-6"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-bold text-slate-600 mb-2 px-1" htmlFor="contactName">Nama Lengkap</label>
-                      <input 
-                        id="contactName" 
-                        name="name" 
+                      <input
+                        id="contactName"
+                        name="name"
                         required
-                        type="text" 
-                        placeholder="Masukkan nama..." 
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors" 
+                        type="text"
+                        placeholder="Masukkan nama..."
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-slate-600 mb-2 px-1" htmlFor="contactEmail">Alamat Email</label>
-                      <input 
-                        id="contactEmail" 
-                        name="email" 
+                      <input
+                        id="contactEmail"
+                        name="email"
                         required
-                        type="email" 
-                        placeholder="Masukkan email..." 
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors" 
+                        type="email"
+                        placeholder="Masukkan email..."
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors"
                       />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-600 mb-2 px-1" htmlFor="contactSubject">Subjek</label>
-                    <input 
-                      id="contactSubject" 
-                      name="contactSubject" 
+                    <input
+                      id="contactSubject"
+                      name="contactSubject"
                       required
-                      type="text" 
-                      placeholder="Apa tujuan anda?" 
-                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors" 
+                      type="text"
+                      placeholder="Apa tujuan anda?"
+                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-600 mb-2 px-1" htmlFor="contactMessage">Pesan Anda</label>
-                    <textarea 
-                      id="contactMessage" 
-                      name="message" 
+                    <textarea
+                      id="contactMessage"
+                      name="message"
                       required
-                      rows={5} 
-                      placeholder="Tuliskan pesan anda di sini..." 
+                      rows={5}
+                      placeholder="Tuliskan pesan anda di sini..."
                       className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-orange-500 transition-colors resize-none"
                     ></textarea>
                   </div>
-                  
+
                   {formStatus === 'error' && (
                     <div className="p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl text-sm font-medium">
                       {resultMessage}
                     </div>
                   )}
 
-                  <button 
+                  <button
                     disabled={formStatus === 'loading'}
                     className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-3 shadow-xl shadow-orange-200 hover:scale-105 transition-transform disabled:opacity-50 disabled:grayscale disabled:scale-100"
                   >
@@ -237,33 +237,6 @@ export default function ContactPage() {
         </div>
 
       </main>
-
-      <footer className="bg-white border-t border-gray-200 pt-32 pb-8">
-        <div className="max-w-[1200px] mx-auto px-6 text-center md:text-left">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-10 mb-16">
-            <div>
-              <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500 tracking-wide uppercase mb-4 block" style={{ fontFamily: '"Grandstander", cursive' }}>
-                ARUNA
-              </span>
-              <p className="text-slate-500 max-w-xs text-sm leading-relaxed">
-                Platform edukasi inovatif sebagai solusi preventif kekerasan seksual anak usia dini di era digital.
-              </p>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center border border-orange-100">
-                <Heart size={20} />
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 font-medium">
-            <p>© 2026 Aruna Edu & Tim Pengusul UNNES.</p>
-            <div className="flex gap-6">
-              <Link href="#" className="hover:text-orange-500 transition-colors">Kebijakan Privasi</Link>
-              <Link href="#" className="hover:text-orange-500 transition-colors">Syarat Ketentuan</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
 
     </div>
   );
