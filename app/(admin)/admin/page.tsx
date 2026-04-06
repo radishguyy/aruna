@@ -20,10 +20,10 @@ export default function AdminAnalyticsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Users', value: '842', change: '+18%', icon: <Users className="w-5 h-5 text-red-400" /> },
-          { label: 'Active Children', value: '342', change: '+24%', icon: <TrendingUp className="w-5 h-5 text-indigo-400" /> },
-          { label: 'Institutions', value: '12', change: '+2', icon: <Globe className="w-5 h-5 text-emerald-400" /> },
-          { label: 'Modules Completed', value: '1,482', change: '+32%', icon: <BarChart3 className="w-5 h-5 text-amber-400" /> },
+          { label: 'Total Users', value: '700', change: '+15%', icon: <Users className="w-5 h-5 text-red-400" /> },
+          { label: 'Active Users', value: '450', change: '+12%', icon: <TrendingUp className="w-5 h-5 text-indigo-400" /> },
+          { label: 'Institutions', value: '3', change: '+1', icon: <Globe className="w-5 h-5 text-emerald-400" /> },
+          { label: 'ARPU', value: 'Rp32.500', change: '+5%', icon: <BarChart3 className="w-5 h-5 text-amber-400" /> },
         ].map((stat, i) => (
           <motion.div
             key={i}
