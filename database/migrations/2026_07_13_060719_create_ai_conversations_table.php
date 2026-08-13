@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('ai_conversations', function (Blueprint $table) {
+            $table->string('id')->primary(); // Support mock ID "ai-1"
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('child_id')->nullable()->constrained('children')->nullOnDelete();
+            $table->text('prompt');
+            $table->text('response');
+            $table->string('sentiment_tag')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('ai_conversations');
+    }
+};
