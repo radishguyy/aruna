@@ -4,7 +4,7 @@ import { mockData } from '@/data/mockData';
 
 const Footer = () => {
   return (
-    <footer id="contact" className="bg-white border-t border-gray-200 pt-32 pb-8 relative -z-10">
+    <footer id="contact" className="bg-white border-t border-gray-200 pt-28 pb-8 relative z-10">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-16">
 
@@ -16,9 +16,9 @@ const Footer = () => {
               Platform edukasi inovatif sebagai solusi preventif kekerasan seksual anak usia dini di era digital.
             </p>
             <div className="flex items-center justify-center md:justify-start gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-colors">
+              <button className="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-colors">
                 <Heart size={18} />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -47,8 +47,8 @@ const Footer = () => {
         <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 font-medium">
           <p>© {new Date().getFullYear()} Aruna Edu & Tim Pengusul UNNES.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-orange-500 transition-colors">Kebijakan Privasi</a>
-            <a href="#" className="hover:text-orange-500 transition-colors">Syarat Ketentuan</a>
+            <a href="/" className="hover:text-orange-500 transition-colors">Kebijakan Privasi</a>
+            <a href="/" className="hover:text-orange-500 transition-colors">Syarat Ketentuan</a>
           </div>
         </div>
       </div>

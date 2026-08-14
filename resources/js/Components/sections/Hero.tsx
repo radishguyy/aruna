@@ -27,12 +27,12 @@ const Hero = () => {
             Edukasi perlindungan diri usia dini (3-6 tahun) berbasis cerita dan simulasi interaktif. Cegah kekerasan seksual dengan cara yang seru dan tanpa rasa takut.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/auth/register" className="bg-white text-orange-600 px-8 py-4 rounded-full font-black text-sm md:text-base shadow-xl hover:scale-105 hover:shadow-orange-900/20 transition-all flex items-center gap-2">
+            <Link href="/register" className="bg-white text-orange-600 px-8 py-4 rounded-full font-black text-sm md:text-base shadow-xl hover:scale-105 hover:shadow-orange-900/20 transition-all flex items-center gap-2">
               <Play size={20} fill="currentColor" /> Mulai Petualangan
             </Link>
-            <Link href="#features" className="bg-orange-600/30 backdrop-blur-sm border border-orange-200/50 text-white px-8 py-4 rounded-full font-bold text-sm md:text-base hover:bg-orange-600/50 transition-colors">
+            <a href="#features" className="bg-orange-600/30 backdrop-blur-sm border border-orange-200/50 text-white px-8 py-4 rounded-full font-bold text-sm md:text-base hover:bg-orange-600/50 transition-colors">
               Lihat Demo
-            </Link>
+            </a>
           </div>
         </div>
       </div>

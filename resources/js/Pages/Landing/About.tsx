@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Send,
 } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { mockData } from '@/data/mockData';
 import Glide from '@glidejs/glide';
@@ -359,9 +360,9 @@ export default function AboutPage() {
                 Tim Aruna siap berkolaborasi untuk menciptakan lingkungan belajar dan bermain yang lebih aman bagi anak Anda.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <a href="/contact" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 shadow-xl shadow-orange-500/20 active:scale-95">
+                <Link href="/contact" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 hover:scale-105 shadow-xl shadow-orange-500/20 active:scale-95">
                   Hubungi Tim Kami <ArrowRight size={20} />
-                </a>
+                </Link>
               </div>
             </div>
 

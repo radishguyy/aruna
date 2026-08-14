@@ -12,6 +12,8 @@ use App\Models\Badge;
 use App\Models\Article;
 use App\Models\TeacherResource;
 use App\Models\AiConversation;
+use App\Models\Classroom;
+use App\Models\Student;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,9 +25,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 1. Create a Teacher & Classroom
+        $teacher = User::factory()->create([
+            'name' => 'Bu Guru Aruna',
+            'email' => 'teacher@school.com',
+            'role' => 'teacher',
+        ]);
+
+        $classroom = Classroom::factory()->create([
+            'teacher_id' => $teacher->id,
+            'class_code' => 'KIDS-2026',
+        ]);
+
+        // 2. Create Classroom Students
+        Student::factory(10)->create([
+            'classroom_id' => $classroom->id,
+        ]);
+
+        // 3. Create a Home Parent & Home Child
+        $homeParent = User::factory()->create([
+            'name' => 'Pak Budi',
+            'email' => 'parent@home.com',
+            'role' => 'parent',
+        ]);
+
+        // Extra demo factories for testing Admin features
+        Institution::factory(3)->create();
+        User::factory(8)->create(['role' => 'parent']);
+        User::factory(4)->create(['role' => 'teacher', 'subscription_status' => 'licensed']);
+        Article::factory(5)->create();
+
         // 1. Seed Institutions
-        Institution::create([
-            'id' => 1,
+        $paudMentari = Institution::create([
             'name' => 'PAUD Mentari',
             'address' => 'Jl. Pendidikan No. 1, Jakarta',
             'license_code' => 'MENTARI-2024',
@@ -35,7 +66,6 @@ class DatabaseSeeder extends Seeder
         // 2. Seed Users
         // Parent
         $parent = User::create([
-            'id' => 1,
             'name' => 'Bunda Rara',
             'email' => 'rara@example.com',
             'password' => Hash::make('password'),
@@ -46,18 +76,16 @@ class DatabaseSeeder extends Seeder
 
         // Teacher
         User::create([
-            'id' => 2,
             'name' => 'Ibu Guru Sari',
             'email' => 'sari@mentari.edu',
             'password' => Hash::make('password'),
             'role' => 'teacher',
             'subscription_status' => 'licensed',
-            'institution_id' => 1,
+            'institution_id' => $paudMentari->id,
         ]);
 
         // Admin
         User::create([
-            'id' => 3,
             'name' => 'Admin Aruna',
             'email' => 'admin@aruna.id',
             'password' => Hash::make('password'),
@@ -70,7 +98,7 @@ class DatabaseSeeder extends Seeder
         $childId = 'c0000000-0000-0000-0000-000000000001';
         $child = Child::create([
             'id' => $childId,
-            'user_id' => 1,
+            'user_id' => $parent->id,
             'nickname' => 'Fachri',
             'gender' => 'male',
             'birth_date' => '2018-05-15',

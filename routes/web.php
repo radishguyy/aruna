@@ -6,7 +6,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\ChildController;
+use App\Http\Controllers\KidsAuthController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 // 1. Guest & Landing Pages
 Route::get('/', [LandingController::class, 'home'])->name('home');
@@ -17,8 +19,34 @@ Route::get('/pricing', [LandingController::class, 'pricing'])->name('pricing');
 Route::get('/contact', [LandingController::class, 'contact'])->name('contact');
 Route::post('/contact', [LandingController::class, 'submitContact'])->name('contact.submit');
 
+// Secret Admin Login Portal (Hidden from public navigation)
+Route::get('/admin/login', function () {
+    return Inertia::render('Admin/Login');
+})->middleware('guest')->name('admin.login');
+
+// Kids Portal
+Route::get('/kids/login', function () {
+    return Inertia::render('Kids/Login');
+})->name('kids.login');
+Route::get('/kids', function () {
+    return redirect()->route('kids.login');
+});
+Route::get('/api/kids/lookup', [KidsAuthController::class, 'lookup']);
+Route::post('/kids/login', [KidsAuthController::class, 'login']);
+
 // 2. Authenticated Routes
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+        $classrooms = \App\Models\Classroom::where('teacher_id', $user->id)->with('students')->get();
+        $children = \App\Models\Student::where('parent_id', $user->id)->get();
+
+        return Inertia::render('Adults/Dashboard', [
+            'classrooms' => $classrooms,
+            'childrenProfile' => $children,
+        ]);
+    })->name('dashboard');
+
     // Onboarding
     Route::get('/auth/onboarding', [ParentController::class, 'onboarding'])->name('onboarding');
     Route::post('/auth/onboarding', [ParentController::class, 'saveOnboarding'])->name('onboarding.save');
@@ -31,10 +59,23 @@ Route::middleware('auth')->group(function () {
     // 3. Admin Area (role: admin)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        
         Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+        Route::patch('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+        Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+
         Route::get('/cms', [AdminController::class, 'cms'])->name('cms');
+        Route::post('/cms/articles', [AdminController::class, 'storeArticle'])->name('articles.store');
+        Route::delete('/cms/articles/{id}', [AdminController::class, 'deleteArticle'])->name('articles.delete');
+        Route::post('/cms/modules', [AdminController::class, 'storeModule'])->name('modules.store');
+        Route::delete('/cms/modules/{id}', [AdminController::class, 'deleteModule'])->name('modules.delete');
+
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+
         Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
+        Route::patch('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
     });
 
     // 4. Teacher Area (role: teacher)

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -37,9 +36,16 @@ class User extends Authenticatable
         return $this->belongsTo(Institution::class);
     }
 
+    // If role == 'teacher'
+    public function classrooms(): HasMany
+    {
+        return $this->hasMany(Classroom::class, 'teacher_id');
+    }
+
+    // If role == 'parent'
     public function children(): HasMany
     {
-        return $this->hasMany(Child::class);
+        return $this->hasMany(Student::class, 'parent_id');
     }
 
     public function conversations(): HasMany
