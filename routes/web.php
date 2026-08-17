@@ -38,11 +38,20 @@ Route::post('/kids/login', [KidsAuthController::class, 'login']);
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
-        $classrooms = \App\Models\Classroom::where('teacher_id', $user->id)->with('students')->get();
-        $children = \App\Models\Student::where('parent_id', $user->id)->get();
+
+        // Select only the columns the Adults/Dashboard view needs.
+        // Critically: exclude Student.pin from the query.
+        $classrooms = \App\Models\Classroom::where('teacher_id', $user->id)
+            ->select(['id', 'teacher_id', 'name', 'class_code'])
+            ->with(['students' => fn($q) => $q->select(['id', 'classroom_id', 'name', 'username', 'avatar', 'points'])])
+            ->get();
+
+        $children = \App\Models\Student::where('parent_id', $user->id)
+            ->select(['id', 'parent_id', 'name', 'username', 'avatar', 'points'])
+            ->get();
 
         return Inertia::render('Adults/Dashboard', [
-            'classrooms' => $classrooms,
+            'classrooms'      => $classrooms,
             'childrenProfile' => $children,
         ]);
     })->name('dashboard');

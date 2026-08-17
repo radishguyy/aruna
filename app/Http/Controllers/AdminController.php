@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Module;
+use App\Http\Resources\ArticleListResource;
+use App\Http\Resources\ArticleResource;
+use App\Http\Resources\ModuleListResource;
+use App\Http\Resources\UserResource;
 use App\Models\Article;
-use App\Models\Institution;
 use App\Models\Child;
-use App\Models\Progress;
+use App\Models\Institution;
+use App\Models\Module;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -18,19 +21,30 @@ class AdminController extends Controller
 {
     /**
      * Admin Dashboard Overview
+     * Analytics counts are deferred so the shell loads instantly.
      */
     public function dashboard(): Response
     {
-        $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
-
         return Inertia::render('Admin/Dashboard', [
-            'usersCount' => User::count(),
-            'institutionsCount' => Institution::count(),
-            'childrenCount' => Child::count(),
-            'activeSubscriptionsCount' => User::whereIn('subscription_status', ['premium', 'licensed'])->count(),
-            'modulesCount' => Module::count(),
-            'articlesCount' => Article::count(),
-            'recentUsers' => $recentUsers,
+            // Defer all count queries — they run only after the page shell
+            // renders, preventing a slow initial load from N independent queries.
+            'usersCount'               => Inertia::defer(fn() => User::count()),
+            'institutionsCount'        => Inertia::defer(fn() => Institution::count()),
+            'childrenCount'            => Inertia::defer(fn() => Child::count()),
+            'activeSubscriptionsCount' => Inertia::defer(
+                fn() => User::whereIn('subscription_status', ['premium', 'licensed'])->count()
+            ),
+            'modulesCount'             => Inertia::defer(fn() => Module::count()),
+            'articlesCount'            => Inertia::defer(fn() => Article::count()),
+            // Recent users — select only required columns, wrapped in resource.
+            'recentUsers'              => Inertia::defer(
+                fn() => UserResource::collection(
+                    User::select(['id', 'name', 'email', 'role', 'subscription_status', 'created_at'])
+                        ->latest()
+                        ->limit(5)
+                        ->get()
+                )
+            ),
         ]);
     }
 
@@ -40,9 +54,12 @@ class AdminController extends Controller
     public function users(Request $request): Response
     {
         $search = $request->query('search');
-        $role = $request->query('role');
+        $role   = $request->query('role');
 
-        $query = User::with(['institution', 'children'])->orderBy('created_at', 'desc');
+        $query = User::with('institution')
+            ->withCount('children')
+            ->select(['id', 'name', 'email', 'role', 'subscription_status', 'institution_id', 'created_at'])
+            ->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -55,25 +72,12 @@ class AdminController extends Controller
             $query->where('role', $role);
         }
 
-        $users = $query->get()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'subscription_status' => $user->subscription_status,
-                'institution' => $user->institution ? $user->institution->name : null,
-                'children_count' => $user->children ? $user->children->count() : 0,
-                'created_at' => $user->created_at ? $user->created_at->format('Y-m-d') : '-',
-            ];
-        });
-
         return Inertia::render('Admin/Users', [
-            'users' => $users,
+            'users'   => UserResource::collection($query->get()),
             'filters' => [
                 'search' => $search ?? '',
-                'role' => $role ?? '',
-            ]
+                'role'   => $role ?? '',
+            ],
         ]);
     }
 
@@ -83,18 +87,18 @@ class AdminController extends Controller
     public function storeUser(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,parent,teacher',
+            'name'                => 'required|string|max:255',
+            'email'               => 'required|email|unique:users,email',
+            'password'            => 'required|string|min:6',
+            'role'                => 'required|in:admin,parent,teacher',
             'subscription_status' => 'required|in:free,standard,premium,licensed',
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'name'                => $request->name,
+            'email'               => $request->email,
+            'password'            => Hash::make($request->password),
+            'role'                => $request->role,
             'subscription_status' => $request->subscription_status,
         ]);
 
@@ -107,7 +111,7 @@ class AdminController extends Controller
     public function updateUser(Request $request, User $user)
     {
         $request->validate([
-            'role' => 'sometimes|in:admin,parent,teacher',
+            'role'                => 'sometimes|in:admin,parent,teacher',
             'subscription_status' => 'sometimes|in:free,standard,premium,licensed',
         ]);
 
@@ -140,12 +144,22 @@ class AdminController extends Controller
 
     /**
      * Manage CMS Content (Articles & Modules)
+     * Module list excludes content_data to keep the payload small;
+     * Article list excludes content body.
      */
     public function cms(): Response
     {
         return Inertia::render('Admin/Cms', [
-            'modules' => Module::orderBy('order', 'asc')->get(),
-            'articles' => Article::orderBy('created_at', 'desc')->get(),
+            'modules'  => ModuleListResource::collection(
+                Module::select(['id', 'category_id', 'title', 'slug', 'type', 'difficulty_level', 'is_premium', 'order'])
+                    ->orderBy('order')
+                    ->get()
+            ),
+            'articles' => ArticleListResource::collection(
+                Article::select(['id', 'slug', 'title', 'description', 'category', 'category_color', 'date', 'author', 'image_url'])
+                    ->latest()
+                    ->get()
+            ),
         ]);
     }
 
@@ -155,24 +169,24 @@ class AdminController extends Controller
     public function storeArticle(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'required|string',
-            'author' => 'required|string',
+            'title'       => 'required|string|max:255',
+            'category'    => 'required|string',
+            'author'      => 'required|string',
             'description' => 'required|string',
-            'content' => 'required|string',
+            'content'     => 'required|string',
         ]);
 
         Article::create([
-            'id' => 'a-' . Str::random(8),
-            'slug' => Str::slug($request->title) . '-' . Str::random(4),
-            'title' => $request->title,
-            'category' => $request->category,
+            'id'          => 'a-' . Str::random(8),
+            'slug'        => Str::slug($request->title) . '-' . Str::random(4),
+            'title'       => $request->title,
+            'category'    => $request->category,
             'category_color' => 'orange',
-            'author' => $request->author,
+            'author'      => $request->author,
             'description' => $request->description,
-            'content' => $request->content,
-            'date' => now()->format('j F Y'),
-            'image_url' => 'https://images.unsplash.com/photo-1602052577122-f73b9710adba?auto=format&fit=crop&q=80',
+            'content'     => $request->content,
+            'date'        => now()->format('j F Y'),
+            'image_url'   => 'https://images.unsplash.com/photo-1602052577122-f73b9710adba?auto=format&fit=crop&q=80',
         ]);
 
         return back()->with('status', 'Artikel berhasil diterbitkan!');
@@ -193,22 +207,22 @@ class AdminController extends Controller
     public function storeModule(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'type' => 'required|in:digfo,digvi,e-modul',
+            'title'            => 'required|string|max:255',
+            'type'             => 'required|in:digfo,digvi,e-modul',
             'difficulty_level' => 'required|integer|min:1|max:3',
-            'is_premium' => 'required|boolean',
-            'description' => 'required|string',
+            'is_premium'       => 'required|boolean',
+            'description'      => 'required|string',
         ]);
 
         Module::create([
-            'id' => 'm-' . Str::random(8),
-            'category_id' => 1,
-            'title' => $request->title,
-            'slug' => Str::slug($request->title) . '-' . Str::random(4),
-            'type' => $request->type,
+            'id'               => 'm-' . Str::random(8),
+            'category_id'      => 1,
+            'title'            => $request->title,
+            'slug'             => Str::slug($request->title) . '-' . Str::random(4),
+            'type'             => $request->type,
             'difficulty_level' => $request->difficulty_level,
-            'is_premium' => $request->is_premium,
-            'content_data' => [
+            'is_premium'       => $request->is_premium,
+            'content_data'     => [
                 'description' => $request->description,
             ],
             'order' => Module::count() + 1,
@@ -233,11 +247,11 @@ class AdminController extends Controller
     {
         return Inertia::render('Admin/Settings', [
             'settings' => [
-                'app_name' => config('app.name', 'Aruna Ecosystem'),
-                'ai_enabled' => true,
-                'maintenance_mode' => false,
-                'institution_count' => Institution::count(),
-            ]
+                'app_name'          => config('app.name', 'Aruna Ecosystem'),
+                'ai_enabled'        => true,
+                'maintenance_mode'  => false,
+                'institution_count' => Inertia::defer(fn() => Institution::count()),
+            ],
         ]);
     }
 
@@ -265,12 +279,12 @@ class AdminController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6',
         ]);
 
-        $user->name = $request->name;
+        $user->name  = $request->name;
         $user->email = $request->email;
 
         if ($request->filled('password')) {

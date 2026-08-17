@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\AuthUserResource;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -32,7 +33,17 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                // Use AuthUserResource instead of the raw model to guarantee
+                // password, remember_token, institution_id, and timestamps
+                // are never leaked into the global page props.
+                'user' => $request->user()
+                    ? AuthUserResource::make($request->user())
+                    : null,
+            ],
+            // Forward flash messages so all controllers can use
+            // back()->with('status', ...) or withErrors(...).
+            'flash' => [
+                'status' => fn() => $request->session()->get('status'),
             ],
         ];
     }
