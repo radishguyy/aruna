@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { CheckCircle2, Star, Sparkles, Building2, ShieldCheck, Zap } from 'lucide-react';
 import { mockData } from '@/data/mockData';
 
@@ -168,8 +168,16 @@ const PricingSection: React.FC<PricingProps> = ({ isAnnual = false }) => {
                     Hubungi Sales
                   </a>
                 ) : (
-                  <Link
-                    href="/register"
+                  <button
+                    onClick={() => {
+                      if (isFree) {
+                        router.visit('/register');
+                      } else {
+                        // Map the generic plan ID to the seeded IDs based on billing cycle
+                        const realPlanId = plan.id === 'standard' ? 'standard_monthly' : (isAnnual ? 'premium_annual' : 'premium_monthly');
+                        router.post('/checkout/initiate', { plan_id: realPlanId });
+                      }
+                    }}
                     className={`block text-center w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 ${
                       isPremium
                         ? 'bg-white text-orange-600 hover:bg-orange-50 shadow-lg hover:scale-105 active:scale-95'
@@ -183,7 +191,7 @@ const PricingSection: React.FC<PricingProps> = ({ isAnnual = false }) => {
                       : isStandard
                       ? 'Pilih Standar'
                       : 'Coba Gratis'}
-                  </Link>
+                  </button>
                 )}
               </div>
             </div>

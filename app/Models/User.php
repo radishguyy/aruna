@@ -48,6 +48,22 @@ class User extends Authenticatable
         return $this->hasMany(Student::class, 'parent_id');
     }
 
+    /**
+     * Get the orders for the user.
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the subscriptions for the user.
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
     public function conversations(): HasMany
     {
         return $this->hasMany(AiConversation::class);

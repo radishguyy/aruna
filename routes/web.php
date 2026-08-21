@@ -60,6 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/auth/onboarding', [ParentController::class, 'onboarding'])->name('onboarding');
     Route::post('/auth/onboarding', [ParentController::class, 'saveOnboarding'])->name('onboarding.save');
 
+    // Checkout & Payment Funnel
+    Route::post('/checkout/initiate', [\App\Http\Controllers\CheckoutController::class, 'initiate'])->name('checkout.initiate');
+    Route::get('/checkout/mock-payment/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'mockPayment'])->name('checkout.mock.payment');
+    Route::get('/checkout/success/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+
     // Standard profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

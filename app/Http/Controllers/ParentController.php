@@ -139,8 +139,21 @@ class ParentController extends Controller
 
     public function billing(): Response
     {
+        $user = auth()->user();
+        $subscription = \App\Models\Subscription::with('plan')
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['active', 'past_due'])
+            ->first();
+            
+        $orders = \App\Models\Order::with(['plan', 'invoice', 'transaction'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
+
         return Inertia::render('Parent/Billing', [
-            'subscription_status' => auth()->user()->subscription_status,
+            'subscription_status' => $user->subscription_status,
+            'subscription' => $subscription,
+            'orders' => $orders
         ]);
     }
 
