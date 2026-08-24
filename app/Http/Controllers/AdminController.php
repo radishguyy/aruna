@@ -73,7 +73,7 @@ class AdminController extends Controller
         }
 
         return Inertia::render('Admin/Users', [
-            'users'   => UserResource::collection($query->get()),
+            'users'   => UserResource::collection($query->paginate(50)),
             'filters' => [
                 'search' => $search ?? '',
                 'role'   => $role ?? '',
@@ -169,25 +169,45 @@ class AdminController extends Controller
     public function storeArticle(Request $request)
     {
         $request->validate([
-            'title'       => 'required|string|max:255',
-            'category'    => 'required|string',
-            'author'      => 'required|string',
-            'description' => 'required|string',
-            'content'     => 'required|string',
+            'title'          => 'required|string|max:255',
+            'category'       => 'required|string',
+            'category_color' => 'nullable|string',
+            'author'         => 'required|string|max:100',
+            'description'    => 'required|string',
+            'content'        => 'required|string',
+            'image_url'      => 'nullable|string',
         ]);
 
+        $categoryColors = [
+            'PANDUAN ORANG TUA' => 'orange',
+            'PARENTING'         => 'orange',
+            'EDUKASI DIGITAL'   => 'indigo',
+            'TIPS & TRIK'       => 'emerald',
+            'KESEHATAN ANAK'    => 'pink',
+            'LITERASI'          => 'blue',
+        ];
+
+        $categoryColor = $request->input(
+            'category_color',
+            $categoryColors[strtoupper(trim($request->category))] ?? 'orange'
+        );
+
         Article::create([
-            'id'          => 'a-' . Str::random(8),
-            'slug'        => Str::slug($request->title) . '-' . Str::random(4),
-            'title'       => $request->title,
-            'category'    => $request->category,
-            'category_color' => 'orange',
-            'author'      => $request->author,
-            'description' => $request->description,
-            'content'     => $request->content,
-            'date'        => now()->format('j F Y'),
-            'image_url'   => 'https://images.unsplash.com/photo-1602052577122-f73b9710adba?auto=format&fit=crop&q=80',
+            'id'             => 'a-' . Str::random(8),
+            'slug'           => Str::slug($request->title) . '-' . Str::random(4),
+            'title'          => trim($request->title),
+            'category'       => trim($request->category),
+            'category_color' => $categoryColor,
+            'author'         => trim($request->author),
+            'description'    => trim($request->description),
+            'content'        => trim($request->input('content')),
+            'date'           => now()->format('j F Y'),
+            'image_url'      => $request->filled('image_url') 
+                ? $request->image_url 
+                : 'https://images.unsplash.com/photo-1602052577122-f73b9710adba?auto=format&fit=crop&q=80',
         ]);
+
+        \Illuminate\Support\Facades\Cache::forget('landing.home_articles');
 
         return back()->with('status', 'Artikel berhasil diterbitkan!');
     }
@@ -198,6 +218,7 @@ class AdminController extends Controller
     public function deleteArticle($id)
     {
         Article::where('id', $id)->delete();
+        \Illuminate\Support\Facades\Cache::forget('landing.home_articles');
         return back()->with('status', 'Artikel berhasil dihapus.');
     }
 

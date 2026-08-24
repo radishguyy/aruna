@@ -57,7 +57,7 @@ class ChildController extends Controller
             ->keyBy('module_id');
 
         $categories = ModuleCategory::with(['modules' => function ($q) {
-            $q->orderBy('order');
+            $q->select('id', 'category_id', 'title', 'slug', 'type', 'difficulty_level', 'is_premium', 'order')->orderBy('order');
         }])->get()->map(function ($cat) use ($progress) {
             $cat->modules->map(function ($mod) use ($progress) {
                 $p                 = $progress->get($mod->id);

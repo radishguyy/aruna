@@ -148,7 +148,7 @@ class ParentController extends Controller
         $orders = \App\Models\Order::with(['plan', 'invoice', 'transaction'])
             ->where('user_id', $user->id)
             ->latest()
-            ->get();
+            ->paginate(20);
 
         return Inertia::render('Parent/Billing', [
             'subscription_status' => $user->subscription_status,

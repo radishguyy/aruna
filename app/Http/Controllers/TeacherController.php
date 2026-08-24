@@ -86,8 +86,9 @@ class TeacherController extends Controller
     {
         $students = $this->getStudentsQuery()
             ->with('progress')
-            ->get()
-            ->map(function ($student) {
+            ->paginate(50);
+            
+        $students->getCollection()->transform(function ($student) {
                 $completed = $student->progress->where('status', 'completed')->count();
                 return [
                     'id'               => $student->id,
@@ -112,7 +113,7 @@ class TeacherController extends Controller
     {
         return Inertia::render('Teacher/Resources', [
             // Wrap in resource to strip internal file_path.
-            'resources' => TeacherResourceResource::collection(TeacherResource::all()),
+            'resources' => TeacherResourceResource::collection(TeacherResource::select('id', 'title', 'type', 'url')->paginate(20)),
         ]);
     }
 

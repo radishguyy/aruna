@@ -13,13 +13,15 @@ class LandingController extends Controller
 {
     public function home(): Response
     {
+        $articles = \Illuminate\Support\Facades\Cache::remember('landing.home_articles', 3600, function () {
+            return Article::select(['id', 'slug', 'title', 'description', 'category', 'category_color', 'date', 'author', 'image_url'])
+                ->limit(3)
+                ->get();
+        });
+
         return Inertia::render('Landing/Home', [
             // Strip full content body for the teaser cards on the home page.
-            'articles' => ArticleListResource::collection(
-                Article::select(['id', 'slug', 'title', 'description', 'category', 'category_color', 'date', 'author', 'image_url'])
-                    ->limit(3)
-                    ->get()
-            ),
+            'articles' => ArticleListResource::collection($articles),
         ]);
     }
 
