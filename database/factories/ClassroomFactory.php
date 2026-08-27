@@ -15,8 +15,10 @@ class ClassroomFactory extends Factory
 
     public function definition(): array
     {
+        $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create() : null);
+
         return [
-            'name' => 'Class ' . $this->faker->word(),
+            'name' => 'Class ' . ($faker?->word() ?? Str::random(4)),
             'class_code' => strtoupper(Str::random(6)),
         ];
     }

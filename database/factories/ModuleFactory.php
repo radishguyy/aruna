@@ -15,21 +15,21 @@ class ModuleFactory extends Factory
 
     public function definition(): array
     {
-        $faker = $this->faker ?? \Faker\Factory::create();
-        $title = $faker->words(3, true);
+        $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create() : null);
+        $title = $faker?->words(3, true) ?? ('Modul ' . Str::random(4));
 
         return [
             'id' => 'm-' . Str::random(8),
-            'category_id' => $faker->numberBetween(1, 2),
+            'category_id' => $faker?->numberBetween(1, 2) ?? 1,
             'title' => ucwords($title),
             'slug' => Str::slug($title) . '-' . Str::random(4),
-            'type' => $faker->randomElement(['digfo', 'digvi', 'e-modul']),
-            'difficulty_level' => $faker->numberBetween(1, 3),
-            'is_premium' => $faker->boolean(40),
+            'type' => $faker?->randomElement(['digfo', 'digvi', 'e-modul']) ?? 'digfo',
+            'difficulty_level' => $faker?->numberBetween(1, 3) ?? 1,
+            'is_premium' => $faker?->boolean(40) ?? false,
             'content_data' => [
-                'description' => $faker->sentence(),
+                'description' => $faker?->sentence() ?? 'Deskripsi modul pembelajaran.',
             ],
-            'order' => $faker->numberBetween(1, 20),
+            'order' => $faker?->numberBetween(1, 20) ?? 1,
         ];
     }
 }

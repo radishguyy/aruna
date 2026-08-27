@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Student>
@@ -14,12 +15,14 @@ class StudentFactory extends Factory
 
     public function definition(): array
     {
+        $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create() : null);
+
         return [
-            'name' => $this->faker->firstName(),
-            'username' => $this->faker->unique()->userName(),
-            'avatar' => 'avatar-' . $this->faker->numberBetween(1, 5) . '.png',
+            'name' => $faker?->firstName() ?? ('Student ' . Str::random(4)),
+            'username' => $faker?->unique()->userName() ?? ('student_' . Str::random(6)),
+            'avatar' => 'avatar-' . ($faker?->numberBetween(1, 5) ?? 1) . '.png',
             'pin' => '1234', // Default for testing
-            'points' => $this->faker->numberBetween(10, 500),
+            'points' => $faker?->numberBetween(10, 500) ?? 100,
         ];
     }
 }
