@@ -16,10 +16,11 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create() : null);
+        $baseUser = $faker?->unique()->userName() ?? ('student_' . Str::random(6));
 
         return [
             'name' => $faker?->firstName() ?? ('Student ' . Str::random(4)),
-            'username' => $faker?->unique()->userName() ?? ('student_' . Str::random(6)),
+            'username' => strtolower($baseUser . '_' . Str::random(4)),
             'avatar' => 'avatar-' . ($faker?->numberBetween(1, 5) ?? 1) . '.png',
             'pin' => '1234', // Default for testing
             'points' => $faker?->numberBetween(10, 500) ?? 100,

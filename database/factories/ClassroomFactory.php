@@ -19,7 +19,7 @@ class ClassroomFactory extends Factory
 
         return [
             'name' => 'Class ' . ($faker?->word() ?? Str::random(4)),
-            'class_code' => strtoupper(Str::random(6)),
+            'class_code' => 'CLS-' . strtoupper(Str::random(8)),
         ];
     }
 }

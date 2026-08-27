@@ -16,12 +16,12 @@ class InstitutionFactory extends Factory
     public function definition(): array
     {
         $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create() : null);
-        $name = 'PAUD ' . ($faker?->company() ?? ('Mentari ' . Str::random(3)));
+        $name = 'PAUD ' . ($faker?->company() ?? ('Karisma ' . Str::random(4)));
 
         return [
             'name' => $name,
-            'address' => $faker?->address() ?? 'Jl. Pendidikan No. ' . rand(1, 100) . ', Jakarta',
-            'license_code' => strtoupper(Str::slug(Str::words($name, 2, ''))) . '-' . ($faker?->numberBetween(2024, 2026) ?? 2026),
+            'address' => $faker?->address() ?? ('Jl. Pendidikan No. ' . rand(1, 100) . ', Jakarta'),
+            'license_code' => 'LIC-' . strtoupper(Str::random(6)) . '-' . rand(2025, 2027),
             'license_expires_at' => now()->addYear(),
         ];
     }
