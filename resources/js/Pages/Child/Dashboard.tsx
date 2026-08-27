@@ -31,17 +31,19 @@ interface Child {
 }
 
 interface Props {
-  child: Child;
-  categories: Category[];
+  child: Child | { data: Child };
+  categories: Category[] | { data: Category[] };
 }
 
-export default function ChildDashboard({ child, categories }: Props) {
+export default function ChildDashboard({ child: childProp, categories: categoriesProp }: Props) {
+  const activeChild: Child = (childProp as any)?.data || childProp || { id: '', nickname: 'Cilik', total_points: 0 };
+  const categoriesList: Category[] = Array.isArray(categoriesProp) ? categoriesProp : ((categoriesProp as any)?.data || []);
   
   // Extract all modules from all categories for flat displays
-  const allModules = categories.flatMap(cat => cat.modules);
-  const digfoModules = allModules.filter(m => m.type === 'digfo');
-  const digviModules = allModules.filter(m => m.type === 'digvi');
-  const emodulModules = allModules.filter(m => m.type === 'e-modul');
+  const allModules: Module[] = categoriesList.flatMap((cat: Category) => cat?.modules || []);
+  const digfoModules: Module[] = allModules.filter((m: Module) => m.type === 'digfo');
+  const digviModules: Module[] = allModules.filter((m: Module) => m.type === 'digvi');
+  const emodulModules: Module[] = allModules.filter((m: Module) => m.type === 'e-modul');
 
   const ModuleCard = ({ mod, icon, bgClass, borderClass, textClass, badgeClass }: {
     mod: Module;
@@ -51,7 +53,7 @@ export default function ChildDashboard({ child, categories }: Props) {
     textClass: string;
     badgeClass: string;
   }) => {
-    const category = categories.find(c => c.id === mod.category_id);
+    const category = categoriesList.find((c: Category) => c.id === mod.category_id);
     return (
       <motion.div
         whileHover={{ scale: 1.02, y: -2 }}
@@ -71,7 +73,7 @@ export default function ChildDashboard({ child, categories }: Props) {
         <div className="flex-1 mt-2">
           <h3 className="text-xl font-bold leading-tight mb-2">{mod.title}</h3>
           <p className="text-sm font-sans font-medium opacity-80 leading-relaxed line-clamp-2">
-            {mod.content_data.description || "Mari berpetualang dan belajar bersama hari ini!"}
+            {mod?.content_data?.description || "Mari berpetualang dan belajar bersama hari ini!"}
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export default function ChildDashboard({ child, categories }: Props) {
               <Sparkles className="w-6 h-6 text-yellow-300" />
               <span className="text-sm font-bold uppercase tracking-widest text-orange-100 font-sans">Area Bermain & Belajar</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black mb-4">Halo Pahlawan {child.nickname}!</h1>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">Halo Pahlawan {activeChild?.nickname || 'Cilik'}!</h1>
             <p className="text-orange-50 md:text-lg font-medium font-sans leading-relaxed">
               Siap untuk bertualang hari ini? Pilih misi belajarmu dan kumpulkan lencana pahlawan!
             </p>
@@ -125,7 +127,7 @@ export default function ChildDashboard({ child, categories }: Props) {
               <div className="text-sm text-gray-500 font-sans font-bold uppercase tracking-wider mb-1">Total Poin Pahlawan</div>
               <div className="text-3xl font-black text-orange-500 flex items-center gap-3">
                 <Star className="w-8 h-8 fill-orange-500" />
-                {child.total_points} <span className="text-base text-gray-400 font-sans font-medium">/ 500 Poin</span>
+                {activeChild?.total_points || 0} <span className="text-base text-gray-400 font-sans font-medium">/ 500 Poin</span>
               </div>
             </div>
             <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center border-2 border-indigo-100">
@@ -135,7 +137,7 @@ export default function ChildDashboard({ child, categories }: Props) {
           <div className="h-5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
             <motion.div 
               initial={{ width: 0 }}
-              animate={{ width: `${Math.min((child.total_points / 500) * 100, 100)}%` }}
+              animate={{ width: `${Math.min(((activeChild?.total_points || 0) / 500) * 100, 100)}%` }}
               transition={{ delay: 0.5, duration: 1, type: "spring" }}
               className="h-full bg-gradient-to-r from-orange-300 via-orange-400 to-orange-500 rounded-full relative"
             >
@@ -161,7 +163,7 @@ export default function ChildDashboard({ child, categories }: Props) {
              </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {digfoModules.map((mod) => (
+            {digfoModules.map((mod: Module) => (
               <ModuleCard 
                 key={mod.id} 
                 mod={mod} 
@@ -192,7 +194,7 @@ export default function ChildDashboard({ child, categories }: Props) {
              </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {digviModules.map((mod) => (
+            {digviModules.map((mod: Module) => (
               <ModuleCard 
                 key={mod.id} 
                 mod={mod} 
@@ -223,7 +225,7 @@ export default function ChildDashboard({ child, categories }: Props) {
              </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {emodulModules.map((mod) => (
+            {emodulModules.map((mod: Module) => (
               <ModuleCard 
                 key={mod.id} 
                 mod={mod} 

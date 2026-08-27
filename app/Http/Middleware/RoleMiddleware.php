@@ -19,6 +19,11 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
+        if (session('is_kids_session')) {
+            return redirect()->route('child.dashboard')
+                ->with('error', 'Akses dibatasi untuk akun anak-anak.');
+        }
+
         if (auth()->user()->role !== $role) {
             abort(403, 'Unauthorized access.');
         }

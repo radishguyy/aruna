@@ -10,9 +10,7 @@ class Student extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'parent_id', 'classroom_id', 'name', 'username', 'avatar', 'pin', 'points'
-    ];
+    protected $guarded = [];
 
     // For login, we don't use standard Laravel Auth, we'll likely use session guards for students
     protected $hidden = ['pin'];

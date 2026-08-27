@@ -23,12 +23,14 @@ interface Props {
 }
 
 export default function ModuleDetail({ child, module, progress }: Props) {
+  const moduleData: Module = (module as any)?.data || module;
+
   const handleBack = () => {
     router.get('/child');
   };
 
   const handleComplete = (score: number) => {
-    router.post(`/child/module/${module.id}/progress`, {
+    router.post(`/child/module/${moduleData.id}/progress`, {
       status: 'completed',
       score: score
     }, {
@@ -40,27 +42,30 @@ export default function ModuleDetail({ child, module, progress }: Props) {
 
   return (
     <>
-      <Head title={module.title} />
+      <Head title={moduleData.title} />
       <div className="w-full h-full min-h-screen bg-white">
-        {module.type === 'digvi' && (
+        {moduleData.type === 'digvi' && (
           <SmartDigvi 
-            moduleId={module.id} 
+            moduleId={moduleData.id} 
+            module={moduleData}
             onBack={handleBack} 
             onComplete={handleComplete} 
           />
         )}
 
-        {module.type === 'digfo' && (
+        {moduleData.type === 'digfo' && (
           <SmartDigfo 
-            moduleId={module.id} 
+            moduleId={moduleData.id} 
+            module={moduleData}
             onBack={handleBack} 
             onComplete={handleComplete} 
           />
         )}
 
-        {module.type === 'e-modul' && (
+        {moduleData.type === 'e-modul' && (
           <SmartEModul 
-            moduleId={module.id} 
+            moduleId={moduleData.id} 
+            module={moduleData}
             onBack={handleBack} 
             onComplete={handleComplete} 
           />

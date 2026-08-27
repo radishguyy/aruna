@@ -10,10 +10,7 @@ class Order extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'user_id', 'plan_id', 'subtotal', 'discount_amount', 'tax_amount', 
-        'total_amount', 'status', 'coupon_code', 'paid_at'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'subtotal' => 'decimal:2',

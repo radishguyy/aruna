@@ -4,21 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Plan;
-use App\Models\Transaction;
-use App\Models\Subscription;
-use App\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends Controller
 {
-    public function initiate(Request $request, PaymentGatewayService $paymentService)
+    public function initiate(Request $request)
     {
         $request->validate([
             'plan_id' => 'required|exists:plans,id',
-            // coupon support to be added later
         ]);
+
+        if (!auth()->check()) {
+            return redirect()->route('register', ['plan_id' => $request->plan_id]);
+        }
 
         $plan = Plan::findOrFail($request->plan_id);
         $user = auth()->user();
@@ -27,71 +27,94 @@ class CheckoutController extends Controller
         $subtotal = $plan->price;
         // Mock Tax 11%
         $taxAmount = $subtotal * 0.11;
-        $totalAmount = $subtotal + $taxAmount;
+        
+        // Generate unique code (random 3 digits)
+        $uniqueCode = rand(100, 999);
+        
+        $totalAmount = $subtotal + $taxAmount + $uniqueCode;
 
         $order = Order::create([
             'user_id' => $user->id,
             'plan_id' => $plan->id,
             'subtotal' => $subtotal,
             'tax_amount' => $taxAmount,
+            'unique_code' => $uniqueCode,
             'total_amount' => $totalAmount,
-            'status' => 'pending'
+            'status' => 'waiting_for_payment'
         ]);
 
-        // Generate payment link (Mocked)
-        $paymentData = $paymentService->generatePaymentToken($order);
+        return redirect()->route('checkout.instructions', ['order' => $order->id]);
+    }
 
-        return Inertia::render('Checkout/Summary', [
-            'order' => $order->load('plan'),
-            'paymentData' => $paymentData
+    public function instructions(Order $order)
+    {
+        // Ensure user owns order
+        if ($order->user_id !== auth()->id()) abort(403);
+        if ($order->status !== 'waiting_for_payment') return redirect()->route('dashboard');
+
+        return Inertia::render('Checkout/Instructions', [
+            'order' => $order->load('plan')
         ]);
     }
 
-    public function mockPayment(Request $request, $order_id)
+    public function confirmMethod(Request $request, Order $order)
     {
-        $order = Order::findOrFail($order_id);
-        
-        // This simulates the user paying and the Webhook being received.
-        // In production, this logic belongs in WebhookController.
-        
-        $order->update(['status' => 'paid', 'paid_at' => now()]);
+        if ($order->user_id !== auth()->id()) abort(403);
+        if ($order->status !== 'waiting_for_payment') return redirect()->route('dashboard');
 
-        Transaction::create([
-            'order_id' => $order->id,
-            'gateway_name' => 'mock_gateway',
-            'gross_amount' => $order->total_amount,
-            'transaction_status' => 'settlement',
-            'settled_at' => now()
+        $request->validate([
+            'payment_method' => 'required|in:qris,bank_transfer',
         ]);
 
-        Subscription::create([
-            'user_id' => $order->user_id,
-            'plan_id' => $order->plan_id,
-            'status' => 'active',
-            'current_period_start' => now(),
-            'current_period_end' => $order->plan->billing_cycle === 'annual' ? now()->addYear() : now()->addMonth(),
+        $order->update([
+            'payment_method' => $request->payment_method
         ]);
 
-        // Update user status
-        $user = $order->user;
-        if (str_contains($order->plan_id, 'institution')) {
-            $user->subscription_status = 'licensed';
-        } else if (str_contains($order->plan_id, 'premium')) {
-            $user->subscription_status = 'premium';
-        } else {
-            $user->subscription_status = 'standard';
+        return redirect()->route('checkout.upload-proof', ['order' => $order->id]);
+    }
+
+    public function uploadProofForm(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) abort(403);
+        if ($order->status !== 'waiting_for_payment') return redirect()->route('dashboard');
+        
+        // Ensure they selected a method
+        if (!$order->payment_method) {
+            return redirect()->route('checkout.instructions', ['order' => $order->id]);
         }
-        $user->save();
 
-        return redirect()->route('checkout.success', ['order_id' => $order->id]);
+        return Inertia::render('Checkout/UploadProof', [
+            'order' => $order->load('plan')
+        ]);
     }
 
-    public function success($order_id)
+    public function submitProof(Request $request, Order $order)
     {
-        $order = Order::with('plan')->findOrFail($order_id);
-        
-        return Inertia::render('Checkout/Success', [
-            'order' => $order
+        if ($order->user_id !== auth()->id()) abort(403);
+        if ($order->status !== 'waiting_for_payment') return redirect()->route('dashboard');
+
+        $request->validate([
+            'payment_proof' => 'required|image|max:5120', // max 5MB
+        ]);
+
+        if ($request->hasFile('payment_proof')) {
+            $path = $request->file('payment_proof')->store('payment_proofs', 'public');
+            
+            $order->update([
+                'payment_proof_path' => $path,
+                'status' => 'pending_approval'
+            ]);
+        }
+
+        return redirect()->route('checkout.pending', ['order' => $order->id]);
+    }
+
+    public function pendingApproval(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) abort(403);
+
+        return Inertia::render('Checkout/PendingApproval', [
+            'order' => $order->load('plan')
         ]);
     }
 }

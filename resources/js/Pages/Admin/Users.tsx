@@ -15,14 +15,18 @@ interface UserItem {
 }
 
 interface Props {
-  users: UserItem[];
+  users: UserItem[] | { data: UserItem[] };
   filters?: {
     search?: string;
     role?: string;
   };
 }
 
-export default function AdminUsers({ users, filters }: Props) {
+export default function AdminUsers({ users: usersProp, filters }: Props) {
+  const userList: UserItem[] = Array.isArray(usersProp)
+    ? usersProp
+    : ((usersProp as any)?.data || []);
+
   const [searchTerm, setSearchTerm] = useState(filters?.search || '');
   const [roleFilter, setRoleFilter] = useState(filters?.role || '');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -141,8 +145,8 @@ export default function AdminUsers({ users, filters }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {users && users.length > 0 ? (
-                  users.map((u) => (
+                {userList.length > 0 ? (
+                  userList.map((u) => (
                     <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors text-sm text-slate-600">
                       <td className="p-5 font-bold text-slate-800">
                         <div className="flex items-center gap-3">

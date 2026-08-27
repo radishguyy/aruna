@@ -13,14 +13,7 @@ class AiConversation extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'id',
-        'user_id',
-        'child_id',
-        'prompt',
-        'response',
-        'sentiment_tag',
-    ];
+    protected $guarded = [];
 
     public function user(): BelongsTo
     {

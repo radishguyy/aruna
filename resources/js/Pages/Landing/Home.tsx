@@ -8,7 +8,7 @@ import Pricing from '@/Components/sections/Pricing';
 import Blog from '@/Components/sections/Blog';
 import CTA from '@/Components/sections/CTA';
 
-export default function Home() {
+export default function Home({ articles }: { articles?: any }) {
   return (
     <MainLayout>
       <div className="font-sans text-slate-800 bg-[#F8FAFC] min-h-screen selection:bg-orange-200 overflow-x-hidden relative">
@@ -18,7 +18,7 @@ export default function Home() {
           <About />
           <Testimonials />
           <Pricing />
-          <Blog />
+          <Blog articles={articles} />
         </main>
       </div>
       <CTA />

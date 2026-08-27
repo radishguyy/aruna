@@ -21,15 +21,16 @@ class ChildController extends Controller
     private function getActiveChild(): ?Child
     {
         $childId = session('active_child_id');
-        if (!$childId) {
-            $child = Child::where('user_id', auth()->id())->first();
+        $child = $childId ? Child::find($childId) : null;
+
+        if (!$child) {
+            $child = Child::where('user_id', auth()->id())->first() ?? Child::first();
             if ($child) {
                 session(['active_child_id' => $child->id]);
-                return $child;
             }
-            return null;
         }
-        return Child::find($childId);
+
+        return $child;
     }
 
     public function selectChild(string $id)

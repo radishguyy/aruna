@@ -3,9 +3,18 @@ import TeacherLayout from '@/Layouts/TeacherLayout';
 import { Head, usePage } from '@inertiajs/react';
 import { User, Mail, School, ShieldAlert } from 'lucide-react';
 
-export default function TeacherProfile() {
+interface Props {
+  institution?: {
+    id?: number;
+    name?: string;
+  } | null;
+}
+
+export default function TeacherProfile({ institution: institutionProp }: Props) {
   const { auth } = usePage().props as any;
-  const user = auth.user;
+  const user = auth?.user || {};
+  const institution = (institutionProp as any)?.data || institutionProp || user?.institution;
+  const institutionName = institution?.name || 'Belum terafiliasi institusi';
 
   return (
     <TeacherLayout>
@@ -19,11 +28,11 @@ export default function TeacherProfile() {
         <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center font-black text-2xl">
-              {user.name.charAt(0)}
+              {user.name ? user.name.charAt(0) : 'G'}
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 leading-tight">{user.name}</h3>
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">{user.role}</p>
+              <h3 className="text-xl font-bold text-gray-900 leading-tight">{user.name || 'Guru'}</h3>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">{user.role || 'teacher'}</p>
             </div>
           </div>
 
@@ -32,7 +41,7 @@ export default function TeacherProfile() {
               <Mail className="w-5 h-5 text-gray-400" />
               <div>
                 <div className="text-xs font-bold text-gray-400">Alamat Email</div>
-                <div className="font-bold text-gray-800">{user.email}</div>
+                <div className="font-bold text-gray-800">{user.email || '-'}</div>
               </div>
             </div>
 
@@ -40,7 +49,7 @@ export default function TeacherProfile() {
               <School className="w-5 h-5 text-gray-400" />
               <div>
                 <div className="text-xs font-bold text-gray-400">Institusi / Sekolah</div>
-                <div className="font-bold text-gray-800">UNNES Integrated Kindergarten</div>
+                <div className="font-bold text-gray-800">{institutionName}</div>
               </div>
             </div>
 

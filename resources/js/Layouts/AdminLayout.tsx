@@ -28,6 +28,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Users className="w-5 h-5" />
               <span className="text-[15px] tracking-wide">Kelola Pengguna</span>
             </Link>
+            <Link href="/admin/payments" className={`flex items-center gap-4 p-4 rounded-xl transition-all font-bold ${pathname.includes('/payments') ? 'bg-orange-600 text-white shadow-md shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <Shield className="w-5 h-5" />
+              <span className="text-[15px] tracking-wide">Pembayaran</span>
+            </Link>
             <Link href="/admin/cms" className={`flex items-center gap-4 p-4 rounded-xl transition-all font-bold ${pathname.includes('/cms') ? 'bg-orange-600 text-white shadow-md shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
               <BookOpen className="w-5 h-5" />
               <span className="text-[15px] tracking-wide">Kelola CMS/Blog</span>

@@ -13,10 +13,14 @@ interface Child {
 }
 
 interface Props {
-  children: Child[];
+  children: Child[] | { data: Child[] };
 }
 
-export default function ChildrenManagement({ children }: Props) {
+export default function ChildrenManagement({ children: childrenProp }: Props) {
+  const childrenList: Child[] = Array.isArray(childrenProp)
+    ? childrenProp
+    : ((childrenProp as any)?.data || []);
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState<string | null>(null);
 
@@ -82,7 +86,7 @@ export default function ChildrenManagement({ children }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
           <AnimatePresence mode="popLayout">
-            {children.map(child => (
+            {childrenList.map(child => (
               <motion.div
                 key={child.id}
                 layout

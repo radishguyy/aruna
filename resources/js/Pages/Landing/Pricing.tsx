@@ -28,7 +28,7 @@ const faqs: FAQItem[] = [
   }
 ];
 
-export default function PricingPage() {
+export default function PricingPage({ plans }: { plans?: any[] }) {
   const [isAnnual, setIsAnnual] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -58,32 +58,29 @@ export default function PricingPage() {
               onClick={() => setIsAnnual(false)}
               className={`px-6 py-2.5 rounded-full text-xs md:text-sm font-bold transition-all ${
                 !isAnnual
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-orange-500 text-white shadow'
+                  : 'text-slate-600 hover:text-orange-500'
               }`}
             >
-              Tagihan Bulanan
+              Bulanan
             </button>
 
             <button
               onClick={() => setIsAnnual(true)}
               className={`px-6 py-2.5 rounded-full text-xs md:text-sm font-bold transition-all flex items-center gap-2 ${
                 isAnnual
-                  ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-md'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-orange-500 text-white shadow'
+                  : 'text-slate-600 hover:text-orange-500'
               }`}
             >
-              <span>Tagihan Tahunan</span>
-              <span className="bg-emerald-400 text-emerald-950 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">
-                Hemat 20%
-              </span>
+              Tahunan <span className="bg-emerald-100 text-emerald-700 text-[10px] uppercase font-black px-2 py-0.5 rounded-full">Hemat 20%</span>
             </button>
           </div>
         </section>
 
         {/* ================= 2. PRICING GRID ================= */}
         <section className="max-w-[1240px] mx-auto px-4 md:px-6 mb-20">
-          <PricingSection isAnnual={isAnnual} />
+          <PricingSection isAnnual={isAnnual} plans={plans} />
         </section>
 
         {/* ================= 3. TRUST HIGHLIGHTS ================= */}

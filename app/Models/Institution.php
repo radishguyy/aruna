@@ -10,12 +10,7 @@ class Institution extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'address',
-        'license_code',
-        'license_expires_at',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'license_expires_at' => 'datetime',

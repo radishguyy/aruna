@@ -5,19 +5,26 @@ import { mockData } from '@/data/mockData';
 
 interface SmartEModulProps {
   moduleId: string | null;
+  module?: any;
   onBack: () => void;
   onComplete?: (score: number) => void;
 }
 
-export default function SmartEModul({ moduleId, onBack, onComplete }: SmartEModulProps) {
-  const moduleData = mockData.modules.find(m => m.id === moduleId);
+export default function SmartEModul({ moduleId, module: moduleProp, onBack, onComplete }: SmartEModulProps) {
+  const moduleData = moduleProp || mockData.modules.find(m => m.id === moduleId);
   const [currentPage, setCurrentPage] = useState(0);
 
-  if (!moduleData || moduleData.type !== 'e-modul') {
+  if (!moduleData) {
     return <div>Module not found</div>;
   }
 
-  const { pages, description } = moduleData.content_data as { pages: {text: string, image?: string}[], description?: string };
+  const contentData = moduleData.content_data || {};
+  const description = contentData.description || moduleData.description || '';
+  const pages: { text: string; image?: string }[] = (contentData.pages && contentData.pages.length > 0)
+    ? contentData.pages
+    : [
+        { text: description || moduleData.title, image: '/api/placeholder/400/300' }
+      ];
 
   const handleNext = () => {
     if (currentPage < pages.length - 1) setCurrentPage(p => p + 1);

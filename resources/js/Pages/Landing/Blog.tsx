@@ -17,10 +17,14 @@ interface Article {
 }
 
 interface Props {
-  articles: Article[];
+  articles: Article[] | { data: Article[] };
 }
 
-export default function Blog({ articles }: Props) {
+export default function Blog({ articles: articlesProp }: Props) {
+  const articleList: Article[] = Array.isArray(articlesProp)
+    ? articlesProp
+    : ((articlesProp as any)?.data || []);
+
   return (
     <MainLayout>
       <Head title="Jurnal & Tips Parenting" />
@@ -45,7 +49,7 @@ export default function Blog({ articles }: Props) {
 
           {/* Blog Grid */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles.map((article, index) => (
+            {articleList.map((article, index) => (
               <motion.div 
                 key={article.id}
                 initial={{ opacity: 0, y: 20 }}

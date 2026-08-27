@@ -4,15 +4,15 @@ import { PropsWithChildren } from 'react';
 
 export default function Guest({ children }: PropsWithChildren) {
     return (
-        <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0 dark:bg-gray-900">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
+        <div className="font-sans text-slate-800 bg-[#F8FAFC] min-h-screen flex flex-col items-center justify-center selection:bg-orange-200">
+            <div className="w-full sm:max-w-md mt-6 mb-6">
+                <Link href="/" className="flex justify-center mb-8">
+                    <ApplicationLogo className="h-20 w-auto fill-current text-orange-500" />
                 </Link>
-            </div>
 
-            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg dark:bg-gray-800">
-                {children}
+                <div className="bg-white p-8 rounded-[2rem] border-2 border-gray-100 shadow-xl shadow-gray-200/50">
+                    {children}
+                </div>
             </div>
         </div>
     );

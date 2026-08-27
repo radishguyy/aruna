@@ -28,16 +28,16 @@ class AdminController extends Controller
         return Inertia::render('Admin/Dashboard', [
             // Defer all count queries — they run only after the page shell
             // renders, preventing a slow initial load from N independent queries.
-            'usersCount'               => Inertia::defer(fn() => User::count()),
-            'institutionsCount'        => Inertia::defer(fn() => Institution::count()),
-            'childrenCount'            => Inertia::defer(fn() => Child::count()),
+            'usersCount' => Inertia::defer(fn() => User::count()),
+            'institutionsCount' => Inertia::defer(fn() => Institution::count()),
+            'childrenCount' => Inertia::defer(fn() => Child::count()),
             'activeSubscriptionsCount' => Inertia::defer(
                 fn() => User::whereIn('subscription_status', ['premium', 'licensed'])->count()
             ),
-            'modulesCount'             => Inertia::defer(fn() => Module::count()),
-            'articlesCount'            => Inertia::defer(fn() => Article::count()),
+            'modulesCount' => Inertia::defer(fn() => Module::count()),
+            'articlesCount' => Inertia::defer(fn() => Article::count()),
             // Recent users — select only required columns, wrapped in resource.
-            'recentUsers'              => Inertia::defer(
+            'recentUsers' => Inertia::defer(
                 fn() => UserResource::collection(
                     User::select(['id', 'name', 'email', 'role', 'subscription_status', 'created_at'])
                         ->latest()
@@ -54,7 +54,7 @@ class AdminController extends Controller
     public function users(Request $request): Response
     {
         $search = $request->query('search');
-        $role   = $request->query('role');
+        $role = $request->query('role');
 
         $query = User::with('institution')
             ->withCount('children')
@@ -64,7 +64,7 @@ class AdminController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -73,10 +73,10 @@ class AdminController extends Controller
         }
 
         return Inertia::render('Admin/Users', [
-            'users'   => UserResource::collection($query->paginate(50)),
+            'users' => UserResource::collection($query->paginate(50)),
             'filters' => [
                 'search' => $search ?? '',
-                'role'   => $role ?? '',
+                'role' => $role ?? '',
             ],
         ]);
     }
@@ -87,18 +87,18 @@ class AdminController extends Controller
     public function storeUser(Request $request)
     {
         $request->validate([
-            'name'                => 'required|string|max:255',
-            'email'               => 'required|email|unique:users,email',
-            'password'            => 'required|string|min:6',
-            'role'                => 'required|in:admin,parent,teacher',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:admin,parent,teacher',
             'subscription_status' => 'required|in:free,standard,premium,licensed',
         ]);
 
         User::create([
-            'name'                => $request->name,
-            'email'               => $request->email,
-            'password'            => Hash::make($request->password),
-            'role'                => $request->role,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
             'subscription_status' => $request->subscription_status,
         ]);
 
@@ -111,7 +111,7 @@ class AdminController extends Controller
     public function updateUser(Request $request, User $user)
     {
         $request->validate([
-            'role'                => 'sometimes|in:admin,parent,teacher',
+            'role' => 'sometimes|in:admin,parent,teacher',
             'subscription_status' => 'sometimes|in:free,standard,premium,licensed',
         ]);
 
@@ -150,7 +150,7 @@ class AdminController extends Controller
     public function cms(): Response
     {
         return Inertia::render('Admin/Cms', [
-            'modules'  => ModuleListResource::collection(
+            'modules' => ModuleListResource::collection(
                 Module::select(['id', 'category_id', 'title', 'slug', 'type', 'difficulty_level', 'is_premium', 'order'])
                     ->orderBy('order')
                     ->get()
@@ -169,22 +169,22 @@ class AdminController extends Controller
     public function storeArticle(Request $request)
     {
         $request->validate([
-            'title'          => 'required|string|max:255',
-            'category'       => 'required|string',
+            'title' => 'required|string|max:255',
+            'category' => 'required|string',
             'category_color' => 'nullable|string',
-            'author'         => 'required|string|max:100',
-            'description'    => 'required|string',
-            'content'        => 'required|string',
-            'image_url'      => 'nullable|string',
+            'author' => 'required|string|max:100',
+            'description' => 'required|string',
+            'content' => 'required|string',
+            'image_url' => 'nullable|string',
         ]);
 
         $categoryColors = [
             'PANDUAN ORANG TUA' => 'orange',
-            'PARENTING'         => 'orange',
-            'EDUKASI DIGITAL'   => 'indigo',
-            'TIPS & TRIK'       => 'emerald',
-            'KESEHATAN ANAK'    => 'pink',
-            'LITERASI'          => 'blue',
+            'PARENTING' => 'orange',
+            'EDUKASI DIGITAL' => 'indigo',
+            'TIPS & TRIK' => 'emerald',
+            'KESEHATAN ANAK' => 'pink',
+            'LITERASI' => 'blue',
         ];
 
         $categoryColor = $request->input(
@@ -193,17 +193,17 @@ class AdminController extends Controller
         );
 
         Article::create([
-            'id'             => 'a-' . Str::random(8),
-            'slug'           => Str::slug($request->title) . '-' . Str::random(4),
-            'title'          => trim($request->title),
-            'category'       => trim($request->category),
+            'id' => 'a-' . Str::random(8),
+            'slug' => Str::slug($request->title) . '-' . Str::random(4),
+            'title' => trim($request->title),
+            'category' => trim($request->category),
             'category_color' => $categoryColor,
-            'author'         => trim($request->author),
-            'description'    => trim($request->description),
-            'content'        => trim($request->input('content')),
-            'date'           => now()->format('j F Y'),
-            'image_url'      => $request->filled('image_url') 
-                ? $request->image_url 
+            'author' => trim($request->author),
+            'description' => trim($request->description),
+            'content' => trim($request->input('content')),
+            'date' => now()->format('j F Y'),
+            'image_url' => $request->filled('image_url')
+                ? $request->image_url
                 : 'https://images.unsplash.com/photo-1602052577122-f73b9710adba?auto=format&fit=crop&q=80',
         ]);
 
@@ -228,22 +228,22 @@ class AdminController extends Controller
     public function storeModule(Request $request)
     {
         $request->validate([
-            'title'            => 'required|string|max:255',
-            'type'             => 'required|in:digfo,digvi,e-modul',
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:digfo,digvi,e-modul',
             'difficulty_level' => 'required|integer|min:1|max:3',
-            'is_premium'       => 'required|boolean',
-            'description'      => 'required|string',
+            'is_premium' => 'required|boolean',
+            'description' => 'required|string',
         ]);
 
         Module::create([
-            'id'               => 'm-' . Str::random(8),
-            'category_id'      => 1,
-            'title'            => $request->title,
-            'slug'             => Str::slug($request->title) . '-' . Str::random(4),
-            'type'             => $request->type,
+            'id' => 'm-' . Str::random(8),
+            'category_id' => 1,
+            'title' => $request->title,
+            'slug' => Str::slug($request->title) . '-' . Str::random(4),
+            'type' => $request->type,
             'difficulty_level' => $request->difficulty_level,
-            'is_premium'       => $request->is_premium,
-            'content_data'     => [
+            'is_premium' => $request->is_premium,
+            'content_data' => [
                 'description' => $request->description,
             ],
             'order' => Module::count() + 1,
@@ -268,9 +268,9 @@ class AdminController extends Controller
     {
         return Inertia::render('Admin/Settings', [
             'settings' => [
-                'app_name'          => config('app.name', 'Aruna Ecosystem'),
-                'ai_enabled'        => true,
-                'maintenance_mode'  => false,
+                'app_name' => config('app.name', 'Aruna Ecosystem'),
+                'ai_enabled' => true,
+                'maintenance_mode' => false,
                 'institution_count' => Inertia::defer(fn() => Institution::count()),
             ],
         ]);
@@ -300,12 +300,12 @@ class AdminController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email,' . $user->id,
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6',
         ]);
 
-        $user->name  = $request->name;
+        $user->name = $request->name;
         $user->email = $request->email;
 
         if ($request->filled('password')) {

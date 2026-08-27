@@ -26,7 +26,7 @@ Route::get('/admin/login', function () {
 
 // Kids Portal
 Route::get('/kids/login', function () {
-    return Inertia::render('Kids/Login');
+    return redirect()->route('login', ['tab' => 'kids']);
 })->name('kids.login');
 Route::get('/kids', function () {
     return redirect()->route('kids.login');
@@ -37,43 +37,53 @@ Route::post('/kids/login', [KidsAuthController::class, 'login']);
 // 2. Authenticated Routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
+        if (session('is_kids_session')) {
+            return redirect()->route('child.dashboard');
+        }
+
         $user = auth()->user();
 
-        // Select only the columns the Adults/Dashboard view needs.
-        // Critically: exclude Student.pin from the query.
-        $classrooms = \App\Models\Classroom::where('teacher_id', $user->id)
-            ->select(['id', 'teacher_id', 'name', 'class_code'])
-            ->with(['students' => fn($q) => $q->select(['id', 'classroom_id', 'name', 'username', 'avatar', 'points'])])
-            ->get();
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
 
-        $children = \App\Models\Student::where('parent_id', $user->id)
-            ->select(['id', 'parent_id', 'name', 'username', 'avatar', 'points'])
-            ->get();
+        if ($user->role === 'teacher') {
+            return redirect()->route('teacher.dashboard');
+        }
 
-        return Inertia::render('Adults/Dashboard', [
-            'classrooms'      => $classrooms,
-            'childrenProfile' => $children,
-        ]);
+        return redirect()->route('parent.dashboard');
     })->name('dashboard');
 
-    // Onboarding
-    Route::get('/auth/onboarding', [ParentController::class, 'onboarding'])->name('onboarding');
-    Route::post('/auth/onboarding', [ParentController::class, 'saveOnboarding'])->name('onboarding.save');
+    // Adult-only authenticated routes
+    Route::middleware(\App\Http\Middleware\EnsureNotKidsSession::class)->group(function () {
+        // Onboarding
+        Route::get('/auth/onboarding', [ParentController::class, 'onboarding'])->name('onboarding');
+        Route::post('/auth/onboarding', [ParentController::class, 'saveOnboarding'])->name('onboarding.save');
 
-    // Checkout & Payment Funnel
-    Route::post('/checkout/initiate', [\App\Http\Controllers\CheckoutController::class, 'initiate'])->name('checkout.initiate');
-    Route::get('/checkout/mock-payment/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'mockPayment'])->name('checkout.mock.payment');
-    Route::get('/checkout/success/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+        // Checkout & Payment Funnel
+        Route::get('/checkout/initiate', [\App\Http\Controllers\CheckoutController::class, 'initiate'])->name('checkout.initiate');
+        Route::get('/checkout/{order}/instructions', [\App\Http\Controllers\CheckoutController::class, 'instructions'])->name('checkout.instructions');
+        Route::post('/checkout/{order}/confirm-method', [\App\Http\Controllers\CheckoutController::class, 'confirmMethod'])->name('checkout.confirm-method');
+        Route::get('/checkout/{order}/upload-proof', [\App\Http\Controllers\CheckoutController::class, 'uploadProofForm'])->name('checkout.upload-proof');
+        Route::post('/checkout/{order}/upload-proof', [\App\Http\Controllers\CheckoutController::class, 'submitProof'])->name('checkout.submit-proof');
+        Route::get('/checkout/{order}/pending', [\App\Http\Controllers\CheckoutController::class, 'pendingApproval'])->name('checkout.pending');
 
-    // Standard profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        // Standard profile routes
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
     // 3. Admin Area (role: admin)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-        
+
+        // Admin Payments
+        Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/{order}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
+        Route::post('/payments/{order}/approve', [\App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve');
+        Route::post('/payments/{order}/reject', [\App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
+
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
         Route::patch('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
@@ -109,7 +119,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [ParentController::class, 'reports'])->name('reports');
         Route::get('/billing', [ParentController::class, 'billing'])->name('billing');
         Route::get('/profile', [ParentController::class, 'profile'])->name('profile');
-        
+
         // Select child profile to play
         Route::get('/select-child/{id}', [ChildController::class, 'selectChild'])->name('select-child');
     });
@@ -123,4 +133,4 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

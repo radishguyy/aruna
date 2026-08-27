@@ -28,12 +28,21 @@ interface Child {
 }
 
 interface Props {
-  child: Child;
-  badges: Badge[];
+  child: Child | { data: Child };
+  badges: Badge[] | { data: Badge[] };
 }
 
-export default function HallOfFame({ child, badges }: Props) {
-  const earnedBadgeIds = child.badges.map(b => b.id);
+export default function HallOfFame({ child: childProp, badges: badgesProp }: Props) {
+  const childData: Child = (childProp as any)?.data || childProp || { id: '', nickname: 'Cilik', total_points: 0, badges: [] };
+  const badgeList: Badge[] = Array.isArray(badgesProp)
+    ? badgesProp
+    : ((badgesProp as any)?.data || []);
+
+  const childBadgesList: Badge[] = Array.isArray(childData?.badges)
+    ? childData.badges
+    : ((childData?.badges as any)?.data || []);
+
+  const earnedBadgeIds = childBadgesList.map(b => b.id);
 
   return (
     <ChildLayout>
@@ -54,19 +63,19 @@ export default function HallOfFame({ child, badges }: Props) {
                <Trophy className="w-10 h-10 md:w-12 md:h-12 text-yellow-200 drop-shadow-sm" />
              </div>
              <div>
-               <div className="text-5xl md:text-6xl font-black">{child.total_points}</div>
+               <div className="text-5xl md:text-6xl font-black">{childData.total_points}</div>
                <div className="text-orange-100 font-sans font-bold tracking-widest text-[10px] md:text-xs uppercase mt-1">Total Poin Terkumpul</div>
              </div>
           </div>
           
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-4 md:p-6 rounded-3xl w-full md:w-auto text-center relative z-10">
-             <div className="text-3xl font-black text-yellow-200">{earnedBadgeIds.length} <span className="text-xl text-white/80 font-bold">/ {badges.length}</span></div>
+             <div className="text-3xl font-black text-yellow-200">{earnedBadgeIds.length} <span className="text-xl text-white/80 font-bold">/ {badgeList.length}</span></div>
              <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-orange-100 mt-2">Lencana Diraih</div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {badges.map((badge) => {
+          {badgeList.map((badge) => {
             const earned = earnedBadgeIds.includes(badge.id);
             const IconComponent = ICONS[badge.image_url] || Award;
             

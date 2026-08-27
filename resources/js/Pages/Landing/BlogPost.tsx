@@ -18,11 +18,14 @@ interface Article {
 }
 
 interface Props {
-  article: Article;
+  article: Article | { data: Article };
 }
 
-export default function BlogPost({ article }: Props) {
+export default function BlogPost({ article: articleProp }: Props) {
+  const article: Article = (articleProp as any)?.data || articleProp;
+
   const renderContent = (content: string) => {
+    if (!content) return null;
     return content.split('\n\n').map((paragraph, index) => (
       <p key={index} className="text-slate-600 leading-relaxed text-lg mb-6">
         {paragraph}

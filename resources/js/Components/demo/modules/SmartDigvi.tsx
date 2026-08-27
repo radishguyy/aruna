@@ -4,18 +4,21 @@ import { mockData } from '@/data/mockData';
 
 interface SmartDigviProps {
   moduleId: string | null;
+  module?: any;
   onBack: () => void;
   onComplete?: (score: number) => void;
 }
 
-export default function SmartDigvi({ moduleId, onBack, onComplete }: SmartDigviProps) {
-  const moduleData = mockData.modules.find(m => m.id === moduleId);
+export default function SmartDigvi({ moduleId, module: moduleProp, onBack, onComplete }: SmartDigviProps) {
+  const moduleData = moduleProp || mockData.modules.find(m => m.id === moduleId);
   
-  if (!moduleData || moduleData.type !== 'digvi') {
+  if (!moduleData) {
     return <div>Module not found</div>;
   }
 
-  const { youtube_id, description } = moduleData.content_data as { youtube_id: string, description?: string };
+  const contentData = moduleData.content_data || {};
+  const youtube_id = contentData.youtube_id || '2g811Eo7K8U';
+  const description = contentData.description || moduleData.description || '';
   const youtubeUrl = `https://www.youtube.com/embed/${youtube_id}?autoplay=0&rel=0&showinfo=0`;
 
   return (

@@ -82,11 +82,31 @@ class KidsAuthController extends Controller
             ]);
         }
 
+        // Determine owner user for student session
+        $ownerId = $student->parent_id
+            ?? ($student->classroom ? $student->classroom->teacher_id : null)
+            ?? \App\Models\User::whereIn('role', ['parent', 'teacher'])->value('id');
+
+        $child = \App\Models\Child::firstOrCreate(
+            ['nickname' => $student->name, 'user_id' => $ownerId],
+            [
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'gender' => 'male',
+                'birth_date' => '2019-01-01',
+                'total_points' => $student->points ?? 0,
+            ]
+        );
+
+        if ($ownerId) {
+            \Illuminate\Support\Facades\Auth::loginUsingId($ownerId);
+        }
+
         // Log the student into session
         session([
             'student_id' => $student->id,
             'student_name' => $student->name,
             'student_username' => $student->username,
+            'active_child_id' => $child->id,
         ]);
 
         return redirect()->route('child.dashboard');

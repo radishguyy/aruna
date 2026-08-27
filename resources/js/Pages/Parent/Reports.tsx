@@ -43,12 +43,16 @@ interface Child {
 }
 
 interface Props {
-  children: Child[];
+  children: Child[] | { data: Child[] };
 }
 
-export default function Reports({ children }: Props) {
+export default function Reports({ children: childrenProp }: Props) {
+  const childrenList: Child[] = Array.isArray(childrenProp)
+    ? childrenProp
+    : ((childrenProp as any)?.data || []);
+
   const [selectedChildIndex, setSelectedChildIndex] = useState(0);
-  const activeChild = children[selectedChildIndex] || null;
+  const activeChild = childrenList[selectedChildIndex] || null;
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
 
   if (!activeChild) {
@@ -113,9 +117,9 @@ export default function Reports({ children }: Props) {
             <p className="text-gray-500 font-medium relative z-10">Laporan perkembangan <span className="font-bold text-indigo-600">{activeChild.nickname}</span> di platform Aruna.</p>
           </div>
           
-          {children.length > 1 && (
+          {childrenList.length > 1 && (
             <div className="flex bg-gray-100 p-1.5 rounded-2xl relative z-10">
-              {children.map((c, i) => (
+              {childrenList.map((c, i) => (
                 <button
                   key={c.id}
                   onClick={() => {

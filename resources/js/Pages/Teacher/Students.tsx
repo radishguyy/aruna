@@ -18,26 +18,30 @@ interface Student {
 }
 
 interface Props {
-  students: Student[];
+  students: Student[] | { data: Student[] };
 }
 
-export default function TeacherStudents({ students }: Props) {
+export default function TeacherStudents({ students: studentsProp }: Props) {
+  const studentsList: Student[] = Array.isArray(studentsProp)
+    ? studentsProp
+    : ((studentsProp as any)?.data || []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [filterClass, setFilterClass] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  const classes = useMemo(() => [...new Set(students.map(s => s.class))], [students]);
+  const classes = useMemo(() => [...new Set(studentsList.map(s => s.class))], [studentsList]);
 
   const filteredStudents = useMemo(() => {
-    return students.filter(s => {
-      const matchSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return studentsList.filter(s => {
+      const matchSearch = (s.name || '').toLowerCase().includes(searchQuery.toLowerCase());
       const matchClass = filterClass === 'all' || s.class === filterClass;
       const matchStatus = filterStatus === 'all' || s.status === filterStatus;
       return matchSearch && matchClass && matchStatus;
     });
-  }, [students, searchQuery, filterClass, filterStatus]);
+  }, [studentsList, searchQuery, filterClass, filterStatus]);
 
   const getTimeAgo = (timestamp: string) => {
     const diff = Date.now() - new Date(timestamp).getTime();
@@ -75,7 +79,7 @@ export default function TeacherStudents({ students }: Props) {
         <div className="relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
           <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2 relative z-10 tracking-tight">Direktori Murid</h1>
-          <p className="text-gray-500 font-medium relative z-10">Kelola dan pantau progress {students.length} murid terdaftar.</p>
+          <p className="text-gray-500 font-medium relative z-10">Kelola dan pantau progress {studentsList.length} murid terdaftar.</p>
         </div>
 
         {/* Search & Filter Bar */}
@@ -160,7 +164,7 @@ export default function TeacherStudents({ students }: Props) {
 
         {/* Results Info */}
         <div className="text-sm text-gray-400 font-medium">
-          Menampilkan {filteredStudents.length} dari {students.length} murid
+          Menampilkan {filteredStudents.length} dari {studentsList.length} murid
         </div>
 
         {/* Student List */}

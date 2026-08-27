@@ -10,10 +10,7 @@ class Transaction extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'order_id', 'gateway_name', 'gateway_transaction_id', 'payment_type',
-        'gross_amount', 'transaction_status', 'raw_gateway_response', 'settled_at'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'gross_amount' => 'decimal:2',

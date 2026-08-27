@@ -5,6 +5,7 @@ import { mockData } from '@/data/mockData';
 
 interface SmartDigfoProps {
   moduleId: string | null;
+  module?: any;
   onBack: () => void;
   onComplete?: (score: number) => void;
 }
@@ -16,15 +17,25 @@ interface BodyPart {
   tooltip?: string;
 }
 
-export default function SmartDigfo({ moduleId, onBack, onComplete }: SmartDigfoProps) {
-  const moduleData = mockData.modules.find(m => m.id === moduleId);
+const DEFAULT_BODY_PARTS: BodyPart[] = [
+  { id: 'head', label: 'Kepala', isPrivate: false },
+  { id: 'chest', label: 'Dada', isPrivate: true, tooltip: 'Area Pribadi: Tidak boleh disentuh kecuali oleh dokter saat ada ibu.' },
+  { id: 'hands', label: 'Tangan', isPrivate: false },
+  { id: 'legs', label: 'Kaki', isPrivate: false },
+];
+
+export default function SmartDigfo({ moduleId, module: moduleProp, onBack, onComplete }: SmartDigfoProps) {
+  const moduleData = moduleProp || mockData.modules.find(m => m.id === moduleId);
   const [activePart, setActivePart] = useState<BodyPart | null>(null);
 
-  if (!moduleData || moduleData.type !== 'digfo') {
+  if (!moduleData) {
     return <div>Module not found</div>;
   }
 
-  const { bodyParts } = moduleData.content_data as { bodyParts: BodyPart[] };
+  const contentData = moduleData.content_data || {};
+  const bodyParts: BodyPart[] = (contentData.bodyParts && contentData.bodyParts.length > 0)
+    ? contentData.bodyParts
+    : DEFAULT_BODY_PARTS;
 
   const handlePartClick = (partId: string) => {
     const part = bodyParts.find(p => p.id === partId);

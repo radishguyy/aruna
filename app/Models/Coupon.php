@@ -13,9 +13,7 @@ class Coupon extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'code', 'type', 'value', 'max_discount', 'usage_limit', 'times_used', 'expires_at'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'value' => 'decimal:2',

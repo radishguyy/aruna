@@ -3,8 +3,9 @@ import ParentLayout from '@/Layouts/ParentLayout';
 import { Head, Link } from '@inertiajs/react';
 import { ShieldCheck, Calendar, CreditCard, Clock, CheckCircle2 } from 'lucide-react';
 
-export default function ParentBilling({ subscription_status, subscription, orders }: any) {
+export default function ParentBilling({ subscription_status, subscription, orders: ordersProp }: any) {
   const isFree = subscription_status === 'free';
+  const orderList = Array.isArray(ordersProp) ? ordersProp : (ordersProp?.data || []);
   
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
@@ -81,13 +82,13 @@ export default function ParentBilling({ subscription_status, subscription, order
           <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
             <h3 className="font-bold text-gray-800 mb-6">Riwayat Pembayaran</h3>
             
-            {orders?.length === 0 ? (
+            {orderList.length === 0 ? (
               <div className="text-center py-8 text-gray-400 text-sm">
                 Belum ada transaksi.
               </div>
             ) : (
               <div className="space-y-4">
-                {orders?.map((order: any) => (
+                {orderList.map((order: any) => (
                   <div key={order.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-2xl">
                     <div className="flex items-center gap-3">
                       {order.status === 'paid' ? (

@@ -38,9 +38,12 @@ const aiResponses = [
   "Bunda bisa coba teknik '3 Lingkaran Kepercayaan': ajak si kecil menggambar 3 lingkaran — siapa yang boleh memeluk, siapa yang boleh menyentuh bahu, dan siapa yang harus jaga jarak.",
 ];
 
-export default function ParentDashboard({ children, conversations: initialConversations }: Props) {
+export default function ParentDashboard({ children = [], conversations: initialConversations = [] }: Props) {
   const [selectedChildIndex, setSelectedChildIndex] = useState(0);
-  const activeChild = children[selectedChildIndex] || null;
+  const safeChildren: Child[] = Array.isArray(children)
+    ? children
+    : ((children as any)?.data || []);
+  const activeChild = safeChildren[selectedChildIndex] || null;
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [responseIndex, setResponseIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -48,8 +51,11 @@ export default function ParentDashboard({ children, conversations: initialConver
 
   const [chatInput, setChatInput] = useState('');
   
-  // Format initial conversations to chatHistory
-  const formattedInitialHistory = initialConversations.flatMap(c => [
+  // Format initial conversations to chatHistory safely
+  const safeConversations: Conversation[] = Array.isArray(initialConversations)
+    ? initialConversations
+    : ((initialConversations as any)?.data || []);
+  const formattedInitialHistory = safeConversations.flatMap(c => [
     { role: 'user', content: c.prompt },
     { role: 'ai', content: c.response }
   ]);
@@ -104,9 +110,9 @@ export default function ParentDashboard({ children, conversations: initialConver
           </div>
 
           {/* Child Select Tabs */}
-          {children.length > 1 && (
+          {safeChildren.length > 1 && (
             <div className="flex bg-gray-100 p-1.5 rounded-2xl relative z-10">
-              {children.map((c, i) => (
+              {safeChildren.map((c, i) => (
                 <button
                   key={c.id}
                   onClick={() => {

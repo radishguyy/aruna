@@ -11,7 +11,7 @@ class Classroom extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['teacher_id', 'name', 'class_code'];
+    protected $guarded = [];
 
     public function teacher(): BelongsTo
     {

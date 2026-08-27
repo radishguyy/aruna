@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -19,9 +20,28 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Register');
+        $planId = $request->query('plan_id');
+        $selectedPlan = null;
+
+        if ($planId) {
+            $plan = Plan::find($planId);
+            if ($plan) {
+                $selectedPlan = [
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'price' => (float) $plan->price,
+                    'billing_cycle' => $plan->billing_cycle,
+                    'features' => $plan->features,
+                ];
+            }
+        }
+
+        return Inertia::render('Auth/Register', [
+            'selectedPlan' => $selectedPlan,
+            'plan_id' => $planId,
+        ]);
     }
 
     /**
@@ -35,17 +55,24 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'plan_id' => 'nullable|string|exists:plans,id',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'parent',
+            'subscription_status' => 'free',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        if ($request->filled('plan_id')) {
+            return redirect()->route('checkout.initiate', ['plan_id' => $request->plan_id]);
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

@@ -30,9 +30,9 @@ class ParentController extends Controller
             'role'                    => 'required|in:parent,teacher',
             'institution_code'        => 'nullable|string',
             'children'                => 'nullable|array',
-            'children.*.nickname'     => 'required|string|max:50',
-            'children.*.gender'       => 'required|in:male,female',
-            'children.*.birth_date'   => 'required|date',
+            'children.*.nickname'     => 'required_if:role,parent|string|max:50',
+            'children.*.gender'       => 'required_if:role,parent|in:male,female',
+            'children.*.birth_date'   => 'required_if:role,parent|date',
         ]);
 
         $user = auth()->user();

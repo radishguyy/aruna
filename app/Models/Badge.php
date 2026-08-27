@@ -10,13 +10,7 @@ class Badge extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'description',
-        'image_url',
-        'requirement_type',
-        'requirement_value',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'requirement_value' => 'integer',

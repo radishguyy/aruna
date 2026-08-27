@@ -113,7 +113,10 @@ class TeacherController extends Controller
     {
         return Inertia::render('Teacher/Resources', [
             // Wrap in resource to strip internal file_path.
-            'resources' => TeacherResourceResource::collection(TeacherResource::select('id', 'title', 'type', 'url')->paginate(20)),
+            'resources' => TeacherResourceResource::collection(
+                TeacherResource::select(['id', 'title', 'description', 'category', 'type', 'file_size', 'download_count'])
+                    ->paginate(20)
+            ),
         ]);
     }
 
@@ -135,6 +138,12 @@ class TeacherController extends Controller
 
     public function profile(): Response
     {
-        return Inertia::render('Teacher/Profile');
+        $user = auth()->user()->load('institution');
+
+        return Inertia::render('Teacher/Profile', [
+            'institution' => $user->institution
+                ? InstitutionResource::make($user->institution)
+                : null,
+        ]);
     }
 }

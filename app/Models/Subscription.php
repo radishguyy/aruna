@@ -10,10 +10,7 @@ class Subscription extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'user_id', 'plan_id', 'status', 'current_period_start', 'current_period_end',
-        'trial_end_at', 'cancelled_at', 'auto_renew'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'current_period_start' => 'datetime',

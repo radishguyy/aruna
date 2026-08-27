@@ -14,17 +14,7 @@ class Module extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'id',
-        'category_id',
-        'title',
-        'slug',
-        'type',
-        'difficulty_level',
-        'is_premium',
-        'content_data',
-        'order',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'is_premium' => 'boolean',

@@ -12,24 +12,27 @@ interface RecentUser {
 }
 
 interface Props {
-  usersCount: number;
-  institutionsCount: number;
-  childrenCount: number;
-  activeSubscriptionsCount: number;
-  modulesCount: number;
-  articlesCount: number;
-  recentUsers: RecentUser[];
+  usersCount?: number;
+  institutionsCount?: number;
+  childrenCount?: number;
+  activeSubscriptionsCount?: number;
+  modulesCount?: number;
+  articlesCount?: number;
+  recentUsers?: RecentUser[] | { data: RecentUser[] };
 }
 
 export default function AdminDashboard({
-  usersCount,
-  institutionsCount,
-  childrenCount,
-  activeSubscriptionsCount,
-  modulesCount,
-  articlesCount,
+  usersCount = 0,
+  institutionsCount = 0,
+  childrenCount = 0,
+  activeSubscriptionsCount = 0,
+  modulesCount = 0,
+  articlesCount = 0,
   recentUsers,
 }: Props) {
+  const safeRecentUsers: RecentUser[] = Array.isArray(recentUsers)
+    ? recentUsers
+    : ((recentUsers as any)?.data || []);
   return (
     <AdminLayout>
       <Head title="Admin Dashboard" />
@@ -141,8 +144,8 @@ export default function AdminDashboard({
                 </tr>
               </thead>
               <tbody>
-                {recentUsers && recentUsers.length > 0 ? (
-                  recentUsers.map((u) => (
+                {safeRecentUsers.length > 0 ? (
+                  safeRecentUsers.map((u) => (
                     <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors text-sm text-slate-600">
                       <td className="p-4 font-bold text-slate-800 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">

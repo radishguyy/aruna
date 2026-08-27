@@ -12,16 +12,7 @@ class TeacherResource extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'id',
-        'title',
-        'description',
-        'category',
-        'type',
-        'file_size',
-        'download_count',
-        'file_path',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'download_count' => 'integer',

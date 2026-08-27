@@ -13,9 +13,7 @@ class Plan extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'id', 'name', 'price', 'billing_cycle', 'features', 'is_active'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'price' => 'decimal:2',

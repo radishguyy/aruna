@@ -22,11 +22,19 @@ interface ModuleItem {
 }
 
 interface Props {
-  articles: ArticleItem[];
-  modules: ModuleItem[];
+  articles: ArticleItem[] | { data: ArticleItem[] };
+  modules: ModuleItem[] | { data: ModuleItem[] };
 }
 
-export default function AdminCms({ articles, modules }: Props) {
+export default function AdminCms({ articles: articlesProp, modules: modulesProp }: Props) {
+  const articleList: ArticleItem[] = Array.isArray(articlesProp)
+    ? articlesProp
+    : ((articlesProp as any)?.data || []);
+
+  const moduleList: ModuleItem[] = Array.isArray(modulesProp)
+    ? modulesProp
+    : ((modulesProp as any)?.data || []);
+
   const [activeTab, setActiveTab] = useState<'articles' | 'modules'>('articles');
   const [isAddArticleOpen, setIsAddArticleOpen] = useState(false);
   const [isAddModuleOpen, setIsAddModuleOpen] = useState(false);
@@ -124,7 +132,7 @@ export default function AdminCms({ articles, modules }: Props) {
               activeTab === 'articles' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <FileText className="w-4 h-4" /> Artikel & Jurnal ({articles?.length || 0})
+            <FileText className="w-4 h-4" /> Artikel & Jurnal ({articleList.length})
           </button>
           <button
             onClick={() => setActiveTab('modules')}
@@ -132,7 +140,7 @@ export default function AdminCms({ articles, modules }: Props) {
               activeTab === 'modules' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <BookOpen className="w-4 h-4" /> Modul Edukasi ({modules?.length || 0})
+            <BookOpen className="w-4 h-4" /> Modul Edukasi ({moduleList.length})
           </button>
         </div>
 
@@ -151,8 +159,8 @@ export default function AdminCms({ articles, modules }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {articles && articles.length > 0 ? (
-                    articles.map((a) => (
+                  {articleList.length > 0 ? (
+                    articleList.map((a) => (
                       <tr key={a.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors text-sm text-slate-600">
                         <td className="p-5">
                           <div className="font-bold text-slate-800">{a.title}</div>
@@ -168,7 +176,7 @@ export default function AdminCms({ articles, modules }: Props) {
                         <td className="p-5 text-right">
                           <button
                             onClick={() => handleDeleteArticle(a.id, a.title)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
                             title="Hapus Artikel"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -204,8 +212,8 @@ export default function AdminCms({ articles, modules }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {modules && modules.length > 0 ? (
-                    modules.map((m) => (
+                  {moduleList.length > 0 ? (
+                    moduleList.map((m) => (
                       <tr key={m.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors text-sm text-slate-600">
                         <td className="p-5 font-bold text-slate-800">
                           <span className="inline-block w-6 text-slate-400 font-mono">#{m.order}</span>

@@ -12,16 +12,5 @@ class Article extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'id',
-        'slug',
-        'title',
-        'description',
-        'content',
-        'category',
-        'category_color',
-        'date',
-        'author',
-        'image_url',
-    ];
+    protected $guarded = [];
 }

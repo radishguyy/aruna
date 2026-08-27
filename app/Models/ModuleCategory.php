@@ -10,12 +10,7 @@ class ModuleCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'description',
-        'slug',
-        'icon',
-    ];
+    protected $guarded = [];
 
     public function modules(): HasMany
     {

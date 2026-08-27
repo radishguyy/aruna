@@ -30,16 +30,20 @@ interface Institution {
 interface Props {
   institution: Institution | null;
   studentsCount: number;
-  recentActivities: ActivityItem[];
-  notifications: NotificationItem[];
+  recentActivities?: ActivityItem[] | { data: ActivityItem[] };
+  notifications?: NotificationItem[];
 }
 
 export default function TeacherDashboard({ institution, studentsCount, recentActivities, notifications: initialNotifs }: Props) {
   const { auth } = usePage().props as any;
-  const user = auth.user;
+  const user = auth?.user || {};
 
-  const [notifications, setNotifications] = useState(initialNotifs);
+  const [notifications, setNotifications] = useState(initialNotifs || []);
   const [selectedActivity, setSelectedActivity] = useState<number | null>(null);
+
+  const activitiesList: ActivityItem[] = Array.isArray(recentActivities)
+    ? recentActivities
+    : ((recentActivities as any)?.data || []);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -159,8 +163,8 @@ export default function TeacherDashboard({ institution, studentsCount, recentAct
             </div>
 
             <div className="space-y-3 flex-1">
-              {recentActivities.length > 0 ? (
-                recentActivities.map(act => (
+              {activitiesList.length > 0 ? (
+                activitiesList.map(act => (
                   <div
                     key={act.id}
                     onClick={() => setSelectedActivity(selectedActivity === act.id ? null : act.id)}

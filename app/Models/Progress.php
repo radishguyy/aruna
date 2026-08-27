@@ -12,13 +12,7 @@ class Progress extends Model
 
     protected $table = 'progress';
 
-    protected $fillable = [
-        'child_id',
-        'module_id',
-        'status',
-        'score',
-        'completed_at',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'score' => 'integer',

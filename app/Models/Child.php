@@ -13,14 +13,7 @@ class Child extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'user_id',
-        'nickname',
-        'gender',
-        'birth_date',
-        'avatar_url',
-        'total_points',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'birth_date' => 'date',
@@ -28,6 +21,11 @@ class Child extends Model
     ];
 
     public function parent(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

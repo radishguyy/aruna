@@ -10,9 +10,7 @@ class Invoice extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = [
-        'order_id', 'invoice_number', 'pdf_url', 'status', 'due_date'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'due_date' => 'datetime',
