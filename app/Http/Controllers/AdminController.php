@@ -45,6 +45,11 @@ class AdminController extends Controller
                         ->get()
                 )
             ),
+            'arpu' => Inertia::defer(function () {
+                $totalRevenue = \App\Models\Order::where('status', 'paid')->sum('total_amount');
+                $totalUsers = User::count();
+                return $totalUsers > 0 ? $totalRevenue / $totalUsers : 0;
+            }),
         ]);
     }
 

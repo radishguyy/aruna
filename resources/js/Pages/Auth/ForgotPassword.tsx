@@ -19,7 +19,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
     return (
         <GuestLayout>
-            <Head title="Forgot Password" />
+            <Head title="Lupa Password - Aruna" />
 
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-black text-slate-800 mb-2" style={{ fontFamily: '"Grandstander", cursive' }}>Forgot Password</h1>

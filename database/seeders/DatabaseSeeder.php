@@ -550,5 +550,7 @@ class DatabaseSeeder extends Seeder
         foreach ($resources as $res) {
             TeacherResource::create($res);
         }
+        // Call DemoUsersSeeder to generate large dataset for demo/ARPU purposes
+        $this->call(DemoUsersSeeder::class);
     }
 }

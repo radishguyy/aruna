@@ -19,6 +19,24 @@ Route::get('/pricing', [LandingController::class, 'pricing'])->name('pricing');
 Route::get('/contact', [LandingController::class, 'contact'])->name('contact');
 Route::post('/contact', [LandingController::class, 'submitContact'])->name('contact.submit');
 
+// Quick Demo Login
+Route::get('/demo-login', function () {
+    $demoUser = \App\Models\User::firstOrCreate(
+        ['email' => 'premium.demo@aruna.id'],
+        [
+            'name' => 'Premium Demo Parent',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'role' => 'parent',
+            'subscription_status' => 'premium',
+            'email_verified_at' => now(),
+        ]
+    );
+
+    \Illuminate\Support\Facades\Auth::login($demoUser);
+    
+    return redirect()->route('dashboard');
+})->name('demo-login');
+
 // Secret Admin Login Portal (Hidden from public navigation)
 Route::get('/admin/login', function () {
     return Inertia::render('Admin/Login');

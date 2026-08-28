@@ -30,7 +30,7 @@ export default function ResetPassword({
 
     return (
         <GuestLayout>
-            <Head title="Reset Password" />
+            <Head title="Reset Password - Aruna" />
 
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-black text-slate-800 mb-2" style={{ fontFamily: '"Grandstander", cursive' }}>Reset Password</h1>

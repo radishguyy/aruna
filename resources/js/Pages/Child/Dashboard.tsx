@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, Play, ShieldAlert, Sparkles, Video, BookText, Image as ImageIcon } from 'lucide-react';
+import { Star, Play, ShieldAlert, Sparkles, Video, BookText, Image as ImageIcon, LogOut } from 'lucide-react';
 import { Link, router, Head } from '@inertiajs/react';
 import ChildLayout from '@/Layouts/ChildLayout';
 
@@ -111,6 +111,16 @@ export default function ChildDashboard({ child: childProp, categories: categorie
             </p>
           </div>
           
+          <Link
+            href={route('logout')}
+            method="post"
+            as="button"
+            className="absolute top-6 right-6 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-2xl px-4 py-2 flex items-center gap-2 font-bold font-sans transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="hidden sm:inline">Keluar</span>
+          </Link>
+
           <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/20 rounded-full blur-2xl"></div>
           <div className="absolute -bottom-4 -right-4 w-32 h-32 md:w-48 md:h-48 bg-orange-300 rounded-full opacity-50 flex items-center justify-center"></div>
         </motion.div>

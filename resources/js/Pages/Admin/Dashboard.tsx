@@ -19,6 +19,7 @@ interface Props {
   modulesCount?: number;
   articlesCount?: number;
   recentUsers?: RecentUser[] | { data: RecentUser[] };
+  arpu?: number;
 }
 
 export default function AdminDashboard({
@@ -29,6 +30,7 @@ export default function AdminDashboard({
   modulesCount = 0,
   articlesCount = 0,
   recentUsers,
+  arpu = 0,
 }: Props) {
   const safeRecentUsers: RecentUser[] = Array.isArray(recentUsers)
     ? recentUsers
@@ -117,6 +119,18 @@ export default function AdminDashboard({
             <div>
               <div className="text-3xl font-black text-slate-800">{articlesCount}</div>
               <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">Artikel Jurnal</div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-3xl shadow-md flex items-center gap-4 hover:shadow-lg transition-shadow text-white">
+            <div className="w-14 h-14 bg-white/20 text-white rounded-2xl flex items-center justify-center border border-white/30 shadow-sm backdrop-blur-sm">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <div>
+              <div className="text-3xl font-black">
+                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(arpu)}
+              </div>
+              <div className="text-xs text-indigo-100 font-bold uppercase tracking-wider">ARPU (Average Revenue Per User)</div>
             </div>
           </div>
         </div>

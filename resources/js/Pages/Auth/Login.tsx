@@ -282,14 +282,26 @@ export default function Login({
                             </PrimaryButton>
                         </div>
 
-                        <div className="text-center pt-4 border-t border-gray-100">
-                            <span className="text-xs text-slate-500">Belum punya akun? </span>
-                            <Link
-                                href={route('register', selectedPlan ? { plan_id: selectedPlan.id } : {})}
-                                className="text-xs font-bold text-orange-500 hover:text-orange-600 transition-colors"
-                            >
-                                Daftar Sekarang
-                            </Link>
+                        <div className="text-center pt-4 border-t border-gray-100 space-y-4 mt-4">
+                            <div>
+                                <span className="text-xs text-slate-500">Belum punya akun? </span>
+                                <Link
+                                    href={route('register', selectedPlan ? { plan_id: selectedPlan.id } : {})}
+                                    className="text-xs font-bold text-orange-500 hover:text-orange-600 transition-colors"
+                                >
+                                    Daftar Sekarang
+                                </Link>
+                            </div>
+                            
+                            <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100 flex flex-col items-center gap-2">
+                                <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide">Untuk Keperluan Demo</span>
+                                <a
+                                    href={route('demo-login')}
+                                    className="w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-sm shadow-sm transition-colors"
+                                >
+                                    Login as Premium Demo User
+                                </a>
+                            </div>
                         </div>
                     </form>
                 </div>

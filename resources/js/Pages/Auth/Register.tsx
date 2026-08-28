@@ -39,7 +39,7 @@ export default function Register({ selectedPlan, plan_id }: RegisterProps) {
 
     return (
         <GuestLayout>
-            <Head title="Register" />
+            <Head title="Daftar Akun - Aruna" />
 
             <div className="text-center mb-6">
                 {selectedPlan && (

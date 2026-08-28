@@ -24,7 +24,7 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-[#F4F7FD] flex flex-col items-center justify-center py-12 px-4 sm:px-6 font-sans relative overflow-hidden">
-      <Head title="Onboarding" />
+      <Head title="Mulai - Aruna" />
       
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[10%] w-[40%] h-[40%] rounded-full bg-emerald-200 mix-blend-multiply blur-[100px] opacity-40"></div>

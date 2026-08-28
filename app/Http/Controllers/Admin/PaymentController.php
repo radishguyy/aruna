@@ -14,7 +14,7 @@ class PaymentController extends Controller
     public function index()
     {
         $orders = Order::with(['user', 'plan'])
-            ->orderByRaw("FIELD(status, 'pending_approval') DESC")
+            ->orderByRaw("CASE WHEN status = 'pending_approval' THEN 1 ELSE 0 END DESC")
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
