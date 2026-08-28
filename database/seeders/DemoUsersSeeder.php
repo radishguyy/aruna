@@ -8,7 +8,6 @@ use App\Models\Plan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Faker\Factory as Faker;
 
 class DemoUsersSeeder extends Seeder
 {
@@ -17,13 +16,35 @@ class DemoUsersSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
-
         // Idempotency check: if the demo user already exists, assume this seeder was already run
         if (User::where('email', 'premium.demo@aruna.id')->exists() && User::count() >= 700) {
-            $this->command->info('DemoUsersSeeder has already been run. Skipping.');
+            $this->command?->info('DemoUsersSeeder has already been run. Skipping.');
             return;
         }
+
+        // Setup faker with fallback for production environments where fakerphp/faker may not be installed
+        $faker = null;
+        if (class_exists(\Faker\Factory::class)) {
+            $faker = \Faker\Factory::create('id_ID');
+        }
+
+        $indonesianFirstNames = [
+            'Ahmad', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fajar', 'Gita', 'Hadi', 'Indah', 'Joko',
+            'Kartika', 'Lestari', 'Muhammad', 'Nur', 'Oki', 'Putri', 'Rahmat', 'Siti', 'Tri', 'Utami',
+            'Wahyu', 'Yusuf', 'Zul', 'Rian', 'Bayu', 'Dian', 'Fitri', 'Hendra', 'Intan', 'Mega',
+            'Nanda', 'Pratama', 'Rini', 'Surya', 'Taufik', 'Vina', 'Wulan', 'Agus', 'Anisa', 'Bambang',
+            'Chandra', 'Desi', 'Edi', 'Farah', 'Gilang', 'Hesti', 'Imam', 'Jihan', 'Kurniawan', 'Maya',
+            'Rizky', 'Aditya', 'Ayu', 'Bagus', 'Dwi', 'Endah', 'Firman', 'Gunawan', 'Hasan', 'Ilham'
+        ];
+
+        $indonesianLastNames = [
+            'Pratama', 'Saputra', 'Wijaya', 'Kusuma', 'Hidayat', 'Santoso', 'Setiawan', 'Nugroho', 'Lestari', 'Wulandari',
+            'Permana', 'Gunawan', 'Siregar', 'Nasution', 'Batubara', 'Pangestu', 'Suharto', 'Yuliana', 'Anggraini', 'Mahendra',
+            'Kurniawan', 'Ramadhan', 'Utomo', 'Wicaksono', 'Subagyo', 'Purwanto', 'Susanto', 'Hartono', 'Sari', 'Handayani',
+            'Firmansyah', 'Budiman', 'Wibowo', 'Cahyono', 'Irawan', 'Prasetyo', 'Hermawan', 'Mulyadi', 'Simanjuntak', 'Siregar'
+        ];
+
+        $domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'mail.com', 'aruna.id'];
 
         // Create a dummy plan if none exists for the orders
         $plan = Plan::firstOrCreate(
@@ -57,28 +78,39 @@ class DemoUsersSeeder extends Seeder
             ]
         );
 
-        // Create a paid order for the demo user
-        Order::create([
-            'id' => Str::uuid(),
-            'user_id' => $demoUser->id,
-            'plan_id' => $plan->id,
-            'subtotal' => 150000,
-            'total_amount' => 150000,
-            'status' => 'paid',
-            'paid_at' => now(),
-        ]);
+        // Create a paid order for the demo user if not already present
+        if (!Order::where('user_id', $demoUser->id)->exists()) {
+            Order::create([
+                'id' => Str::uuid(),
+                'user_id' => $demoUser->id,
+                'plan_id' => $plan->id,
+                'subtotal' => 150000,
+                'total_amount' => 150000,
+                'status' => 'paid',
+                'paid_at' => now(),
+            ]);
+        }
 
-        $usersGenerated = 1; // We just created 1
         $paidOrdersCreated = 1;
 
         // 2. Generate the rest of the 699 users
         $usersToInsert = [];
         for ($i = 0; $i < $totalUsersToGenerate - 1; $i++) {
             $isPremium = $paidOrdersCreated < $usersWithPaidOrders;
+
+            if ($faker) {
+                $name = $faker->name();
+                $email = $faker->unique()->safeEmail();
+            } else {
+                $first = $indonesianFirstNames[array_rand($indonesianFirstNames)];
+                $last = $indonesianLastNames[array_rand($indonesianLastNames)];
+                $name = $first . ' ' . $last;
+                $email = Str::slug($first) . '.' . Str::slug($last) . '.' . Str::random(5) . '@' . $domains[array_rand($domains)];
+            }
             
             $usersToInsert[] = [
-                'name' => $faker->name,
-                'email' => $faker->unique()->safeEmail,
+                'name' => $name,
+                'email' => $email,
                 'email_verified_at' => now(),
                 'password' => $password,
                 'role' => 'parent',
@@ -96,9 +128,7 @@ class DemoUsersSeeder extends Seeder
             User::insert($chunk);
         }
 
-        // We need to fetch the inserted premium users to create orders for them
-        // because we used `insert` which doesn't return models.
-        // We can just fetch the recently created users where subscription is premium and they don't have orders yet.
+        // Create orders for recently inserted premium users
         $recentPremiumUsers = User::where('subscription_status', 'premium')
             ->where('email', '!=', 'premium.demo@aruna.id')
             ->whereDoesntHave('orders')
@@ -123,5 +153,7 @@ class DemoUsersSeeder extends Seeder
         foreach (array_chunk($ordersToInsert, 100) as $chunk) {
             Order::insert($chunk);
         }
+
+        $this->command?->info('DemoUsersSeeder completed successfully.');
     }
 }

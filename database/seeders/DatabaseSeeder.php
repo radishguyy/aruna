@@ -552,5 +552,8 @@ class DatabaseSeeder extends Seeder
         }
         // Call DemoUsersSeeder to generate large dataset for demo/ARPU purposes
         $this->call(DemoUsersSeeder::class);
+
+        // Call SmartDigviVideoSeeder to seed YouTube video library
+        $this->call(SmartDigviVideoSeeder::class);
     }
 }
