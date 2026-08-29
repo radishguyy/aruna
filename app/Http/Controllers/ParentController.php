@@ -82,8 +82,23 @@ class ParentController extends Controller
             ->with('progress')
             ->get();
 
+        $user = auth()->user();
+        $subscription = \App\Models\Subscription::with('plan')
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['active', 'past_due'])
+            ->first();
+            
+        $orders = \App\Models\Order::with(['plan', 'invoice', 'transaction'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
         return Inertia::render('Parent/Dashboard', [
             'children' => ChildResource::collection($children),
+            'subscription' => $subscription,
+            'subscription_status' => $user->subscription_status,
+            'recent_orders' => $orders,
             // Conversations are a secondary widget — defer them so the
             // dashboard shell is not blocked by this query.
             'conversations' => Inertia::defer(

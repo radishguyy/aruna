@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, BrainCircuit, LineChart, ChevronRight, CheckCircle2, CircleDashed, BookOpen, Loader2, Sparkles, User as UserIcon } from 'lucide-react';
+import { Send, BrainCircuit, LineChart, ChevronRight, CheckCircle2, CircleDashed, BookOpen, Loader2, Sparkles, User as UserIcon, Calendar, CreditCard, Clock } from 'lucide-react';
 import { Link, router, Head } from '@inertiajs/react';
 import ParentLayout from '@/Layouts/ParentLayout';
 
@@ -27,6 +27,9 @@ interface Conversation {
 interface Props {
   children: Child[];
   conversations: Conversation[];
+  subscription?: any;
+  subscription_status?: string;
+  recent_orders?: any[];
 }
 
 const aiResponses = [
@@ -38,7 +41,18 @@ const aiResponses = [
   "Bunda bisa coba teknik '3 Lingkaran Kepercayaan': ajak si kecil menggambar 3 lingkaran — siapa yang boleh memeluk, siapa yang boleh menyentuh bahu, dan siapa yang harus jaga jarak.",
 ];
 
-export default function ParentDashboard({ children = [], conversations: initialConversations = [] }: Props) {
+export default function ParentDashboard({ children = [], conversations: initialConversations = [], subscription, subscription_status, recent_orders }: Props) {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  const formatRupiah = (val: string) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parseFloat(val));
+  };
   const [selectedChildIndex, setSelectedChildIndex] = useState(0);
   const safeChildren: Child[] = Array.isArray(children)
     ? children
@@ -287,7 +301,7 @@ export default function ParentDashboard({ children = [], conversations: initialC
             </motion.div>
           </div>
         ) : (
-          <div className="bg-white p-12 rounded-[2.5rem] text-center border-2 border-dashed border-gray-200">
+          <div className="bg-white p-12 rounded-[2.5rem] text-center border-2 border-dashed border-gray-200 relative z-10">
             <UserIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-800 mb-2">Belum ada profil anak</h3>
             <p className="text-gray-500 max-w-md mx-auto mb-6">
@@ -298,6 +312,121 @@ export default function ParentDashboard({ children = [], conversations: initialC
             </Link>
           </div>
         )}
+
+        {/* Subscription & Billing Dashboard Widget */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+          {/* Subscription Info */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-100 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex justify-between items-center pb-4 border-b border-gray-50 mb-6">
+                <span className="font-bold text-gray-800">Status Langganan</span>
+                <span className={`font-black px-4 py-1.5 rounded-full text-xs uppercase border ${
+                  subscription_status === 'free' ? 'bg-gray-100 text-gray-600 border-gray-200' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                }`}>
+                  {subscription_status === 'free' ? 'Free Version' : (subscription?.plan?.name || subscription_status)}
+                </span>
+              </div>
+
+              {subscription_status !== 'free' && subscription && (
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <Calendar className="w-5 h-5 text-gray-400" />
+                    <div className="flex-1">
+                      <div className="text-xs font-bold text-gray-400">Berlaku Hingga</div>
+                      <div className="font-bold text-gray-800">
+                        {formatDate(subscription.current_period_end)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <CreditCard className="w-5 h-5 text-gray-400" />
+                    <div className="flex-1">
+                      <div className="text-xs font-bold text-gray-400">Status Layanan</div>
+                      <div className="font-bold text-gray-800">
+                        {subscription.status === 'active' ? 'Aktif' : 'Menunggu Pembayaran'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <Link href="/parent/billing" className="block text-center w-full py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-sm rounded-xl transition-colors border border-gray-200">
+              Kelola Pembayaran
+            </Link>
+          </motion.div>
+
+          {/* Recent Orders */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-100 flex flex-col"
+          >
+            <h3 className="font-bold text-gray-800 mb-6">Pembayaran Terakhir</h3>
+            
+            {(!recent_orders || recent_orders.length === 0) ? (
+              <div className="text-center py-6 text-gray-400 text-sm flex-1 flex items-center justify-center">
+                Belum ada transaksi.
+              </div>
+            ) : (
+              <div className="space-y-4 flex-1">
+                {recent_orders.slice(0, 3).map((order: any) => (
+                  <div key={order.id} className="flex justify-between items-center p-3 border border-gray-100 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      {order.status === 'paid' ? (
+                        <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
+                          <Clock className="w-4 h-4" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-sm font-bold text-gray-800">{order.plan?.name || 'Paket'}</div>
+                        <div className="text-xs text-gray-400">{formatDate(order.created_at)}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-gray-900">{formatRupiah(order.total_amount)}</div>
+                      <div className={`text-[10px] font-black uppercase tracking-wider ${
+                        order.status === 'paid' ? 'text-emerald-500' : 'text-orange-500'
+                      }`}>
+                        {order.status === 'paid' ? 'LUNAS' : 'PENDING'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {recent_orders && recent_orders.length > 3 && (
+              <Link href="/parent/billing" className="text-center text-xs text-indigo-500 font-bold block mt-4 hover:text-indigo-600">
+                Lihat Semua Pembayaran
+              </Link>
+            )}
+          </motion.div>
+        </div>
+
+        {/* WhatsApp Chat Admin Floating Button */}
+        <a 
+          href="https://wa.me/6285117220015" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="fixed bottom-24 md:bottom-10 right-6 md:right-10 bg-[#25D366] hover:bg-[#128C7E] text-white p-4 rounded-[1.5rem] shadow-2xl shadow-[#25D366]/40 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 z-[60] border-2 border-white"
+          aria-label="Chat Admin"
+        >
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+          </svg>
+          <span className="font-bold text-sm tracking-wide hidden md:block">Chat Admin</span>
+        </a>
       </div>
     </ParentLayout>
   );

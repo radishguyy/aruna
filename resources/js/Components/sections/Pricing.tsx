@@ -213,24 +213,71 @@ const PricingSection: React.FC<PricingProps> = ({ isAnnual = false, plans }) => 
                   >
                     Hubungi Sales
                   </a>
-                ) : (
-                  <button
-                    onClick={() => handleSelectPlan(plan, displayPrice, isFree)}
-                    className={`block text-center w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 ${
-                      isPremium
-                        ? 'bg-white text-orange-600 hover:bg-orange-50 shadow-lg hover:scale-105 active:scale-95'
-                        : isStandard
-                        ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-md hover:scale-105 active:scale-95'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 active:scale-95'
-                    }`}
-                  >
-                    {isPremium
-                      ? 'Mulai Premium'
-                      : isStandard
-                      ? 'Pilih Standar'
-                      : 'Coba Gratis'}
-                  </button>
-                )}
+                ) : (() => {
+                  if (!isAuthenticated) {
+                    return (
+                      <button
+                        onClick={() => handleSelectPlan(plan, displayPrice, isFree)}
+                        className={`block text-center w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 ${
+                          isPremium
+                            ? 'bg-white text-orange-600 hover:bg-orange-50 shadow-lg hover:scale-105 active:scale-95'
+                            : isStandard
+                            ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-md hover:scale-105 active:scale-95'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 active:scale-95'
+                        }`}
+                      >
+                        {isPremium
+                          ? 'Mulai Premium'
+                          : isStandard
+                          ? 'Pilih Standar'
+                          : 'Coba Gratis'}
+                      </button>
+                    );
+                  }
+
+                  const tierMap: Record<string, number> = {
+                    free: 0,
+                    standard: 1,
+                    premium: 2,
+                  };
+
+                  const currentStatus = auth?.user?.subscription_status || 'free';
+                  const currentTier = currentStatus === 'licensed' ? 3 : (tierMap[currentStatus] || 0);
+                  const planTier = tierMap[plan.id] || 0;
+
+                  if (planTier === currentTier) {
+                    return (
+                      <button
+                        disabled
+                        className="block text-center w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider bg-emerald-100 text-emerald-600 cursor-not-allowed"
+                      >
+                        Paket Aktif
+                      </button>
+                    );
+                  } else if (planTier > currentTier) {
+                    return (
+                      <button
+                        onClick={() => handleSelectPlan(plan, displayPrice, isFree)}
+                        className={`block text-center w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 ${
+                          isPremium
+                            ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white hover:shadow-lg hover:scale-105 active:scale-95'
+                            : 'bg-orange-500 text-white hover:bg-orange-600 hover:scale-105 active:scale-95'
+                        }`}
+                      >
+                        Upgrade ke {plan.name}
+                      </button>
+                    );
+                  } else {
+                    return (
+                      <button
+                        onClick={() => handleSelectPlan(plan, displayPrice, isFree)}
+                        className="block text-center w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95"
+                      >
+                        Downgrade ke {plan.name}
+                      </button>
+                    );
+                  }
+                })()}
               </div>
             </div>
           );
