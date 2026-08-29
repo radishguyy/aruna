@@ -86,6 +86,8 @@ class DemoUsersSeeder extends Seeder
                 'plan_id' => $plan->id,
                 'subtotal' => 150000,
                 'total_amount' => 150000,
+                'payment_method' => 'bank_transfer',
+                'payment_proof_path' => 'payment_proofs/demo-proof.jpg',
                 'status' => 'paid',
                 'paid_at' => now(),
             ]);
@@ -138,11 +140,13 @@ class DemoUsersSeeder extends Seeder
         $ordersToInsert = [];
         foreach ($recentPremiumUsers as $user) {
             $ordersToInsert[] = [
-                'id' => Str::uuid(),
+                'id' => (string) Str::uuid(),
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
                 'subtotal' => 150000,
                 'total_amount' => 150000,
+                'payment_method' => 'bank_transfer',
+                'payment_proof_path' => 'payment_proofs/demo-proof.jpg',
                 'status' => 'paid',
                 'paid_at' => now(),
                 'created_at' => now(),
@@ -152,6 +156,29 @@ class DemoUsersSeeder extends Seeder
 
         foreach (array_chunk($ordersToInsert, 100) as $chunk) {
             Order::insert($chunk);
+        }
+
+        // Create 3 demo pending approval orders for testing/demoing admin verification
+        $freeUsersForPending = User::where('subscription_status', 'free')
+            ->whereDoesntHave('orders')
+            ->limit(3)
+            ->get();
+
+        foreach ($freeUsersForPending as $idx => $user) {
+            Order::create([
+                'id' => (string) Str::uuid(),
+                'user_id' => $user->id,
+                'plan_id' => $plan->id,
+                'subtotal' => 50000,
+                'tax_amount' => 5500,
+                'unique_code' => 123 + $idx,
+                'total_amount' => 55623 + $idx,
+                'payment_method' => 'bank_transfer',
+                'payment_proof_path' => 'payment_proofs/demo-proof.jpg',
+                'status' => 'pending_approval',
+                'created_at' => now()->subMinutes(15 * ($idx + 1)),
+                'updated_at' => now()->subMinutes(15 * ($idx + 1)),
+            ]);
         }
 
         $this->command?->info('DemoUsersSeeder completed successfully.');

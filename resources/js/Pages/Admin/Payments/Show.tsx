@@ -156,24 +156,25 @@ export default function PaymentShow({ order }: Props) {
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 flex flex-col">
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Bukti Transfer</h3>
             <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-center p-4 overflow-hidden relative">
-              {order.payment_proof_path ? (
-                <a href={`/storage/${order.payment_proof_path}`} target="_blank" rel="noreferrer" className="block w-full h-full min-h-[300px]">
-                  <img 
-                    src={`/storage/${order.payment_proof_path}`} 
-                    alt="Bukti Transfer" 
-                    className="w-full h-full object-contain rounded-xl"
-                  />
-                </a>
-              ) : (
-                <div className="text-center text-slate-400 flex flex-col items-center">
-                  <AlertCircle className="w-10 h-10 mb-2 opacity-50" />
-                  <p className="font-bold">Belum ada bukti yang diunggah</p>
-                </div>
-              )}
+              {(() => {
+                const proofImageUrl = order.payment_proof_path
+                  ? (order.payment_proof_path.startsWith('/') || order.payment_proof_path.startsWith('http')
+                      ? order.payment_proof_path
+                      : `/storage/${order.payment_proof_path}`)
+                  : '/images/payments/demo-proof.jpg';
+
+                return (
+                  <a href={proofImageUrl} target="_blank" rel="noreferrer" className="block w-full h-full min-h-[300px]">
+                    <img 
+                      src={proofImageUrl} 
+                      alt="Bukti Transfer" 
+                      className="w-full h-full object-contain rounded-xl"
+                    />
+                  </a>
+                );
+              })()}
             </div>
-            {order.payment_proof_path && (
-              <p className="text-xs text-center text-slate-400 mt-3">Klik gambar untuk melihat ukuran penuh</p>
-            )}
+            <p className="text-xs text-center text-slate-400 mt-3">Klik gambar untuk melihat ukuran penuh</p>
           </div>
 
         </div>

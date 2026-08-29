@@ -26,7 +26,7 @@ export default function CheckoutInstructions({ order }: CheckoutProps) {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText('1234567890');
+    navigator.clipboard.writeText('006850147849');
     alert('Nomor rekening berhasil disalin!');
   };
 
@@ -123,8 +123,8 @@ export default function CheckoutInstructions({ order }: CheckoutProps) {
                   <Landmark className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-slate-800">Transfer Bank BCA</h3>
-                  <p className="text-sm text-gray-500">Transfer manual ke rekening BCA kami</p>
+                  <h3 className="font-bold text-lg text-slate-800">Transfer Bank BCA BLU</h3>
+                  <p className="text-sm text-gray-500">Transfer manual ke rekening BCA BLU kami</p>
                 </div>
               </div>
               
@@ -132,16 +132,16 @@ export default function CheckoutInstructions({ order }: CheckoutProps) {
                 <div className="mt-6 p-5 bg-slate-50 rounded-2xl space-y-4">
                   <div>
                     <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Bank</div>
-                    <div className="font-black text-slate-800">BCA (Bank Central Asia)</div>
+                    <div className="font-black text-slate-800">BCA BLU</div>
                   </div>
                   <div>
                     <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Atas Nama</div>
-                    <div className="font-black text-slate-800">PT Aruna Edukasi Anak</div>
+                    <div className="font-black text-slate-800">Muhamad Nur Iman</div>
                   </div>
                   <div>
                     <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Nomor Rekening</div>
                     <div className="flex items-center justify-between bg-white px-3 py-2 border border-gray-200 rounded-xl">
-                      <span className="font-black text-xl text-slate-800 tracking-wider">1234 5678 90</span>
+                      <span className="font-black text-xl text-slate-800 tracking-wider">006850147849</span>
                       <button onClick={handleCopy} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Salin nomor rekening">
                         <Copy className="w-5 h-5" />
                       </button>
