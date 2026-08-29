@@ -25,6 +25,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Seed Plans
+        $this->call(PlanSeeder::class);
+
         // 1. Create a Teacher & Classroom
         $teacher = User::factory()->create([
             'name' => 'Bu Guru Aruna',

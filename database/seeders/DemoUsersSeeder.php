@@ -48,12 +48,12 @@ class DemoUsersSeeder extends Seeder
 
         // Create a dummy plan if none exists for the orders
         $plan = Plan::firstOrCreate(
-            ['id' => 'premium-monthly'],
+            ['id' => 'premium_monthly'],
             [
-                'name' => 'Premium Monthly',
-                'price' => 150000,
+                'name' => 'Paket Premium (Bulanan)',
+                'price' => 50000.00,
                 'billing_cycle' => 'monthly',
-                'features' => ['All features'],
+                'features' => ['Semua Modul Edukasi', 'Simulasi AR Immersive'],
                 'is_active' => true,
             ]
         );
