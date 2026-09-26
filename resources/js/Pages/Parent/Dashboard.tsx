@@ -29,6 +29,9 @@ interface Props {
   conversations: Conversation[];
   subscription?: any;
   subscription_status?: string;
+  has_active_subscription?: boolean;
+  max_allowed_children?: number;
+  children_count?: number;
   recent_orders?: any[];
 }
 
@@ -41,7 +44,16 @@ const aiResponses = [
   "Bunda bisa coba teknik '3 Lingkaran Kepercayaan': ajak si kecil menggambar 3 lingkaran — siapa yang boleh memeluk, siapa yang boleh menyentuh bahu, dan siapa yang harus jaga jarak.",
 ];
 
-export default function ParentDashboard({ children = [], conversations: initialConversations = [], subscription, subscription_status, recent_orders }: Props) {
+export default function ParentDashboard({
+  children = [],
+  conversations: initialConversations = [],
+  subscription,
+  subscription_status,
+  has_active_subscription = false,
+  max_allowed_children = 1,
+  children_count = 0,
+  recent_orders,
+}: Props) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
       day: 'numeric',
@@ -141,6 +153,39 @@ export default function ParentDashboard({ children = [], conversations: initialC
             </div>
           )}
         </div>
+
+        {/* Proactive Subscription Recommendation Banner */}
+        {!has_active_subscription && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-[2rem] p-6 md:p-8 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 border-2 border-indigo-400/30"
+          >
+            <div className="flex items-start gap-4 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-yellow-400 text-slate-950 flex items-center justify-center shrink-0 shadow-lg shadow-yellow-400/30">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-[11px] font-black uppercase tracking-wider text-yellow-300 mb-1">
+                  Akses Free Version • 1 Anak & 1 Modul
+                </div>
+                <h2 className="text-xl md:text-2xl font-black mb-1">
+                  Unlock the Full Learning Experience
+                </h2>
+                <p className="text-indigo-100 text-sm font-medium max-w-xl leading-relaxed">
+                  Get access to more learning modules and additional child profiles with a subscription.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/pricing"
+              className="relative z-10 shrink-0 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-orange-500/30 transition-all hover:scale-105 active:scale-95 text-xs uppercase tracking-wider flex items-center gap-2"
+            >
+              <span>View Subscription Plans</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+        )}
 
         {activeChild ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
@@ -324,15 +369,34 @@ export default function ParentDashboard({ children = [], conversations: initialC
           >
             <div>
               <div className="flex justify-between items-center pb-4 border-b border-gray-50 mb-6">
-                <span className="font-bold text-gray-800">Status Langganan</span>
+                <div>
+                  <span className="font-bold text-gray-800 block text-base">Status Langganan</span>
+                  <span className="text-xs text-gray-400 font-medium">Tingkat akses akun keluarga</span>
+                </div>
                 <span className={`font-black px-4 py-1.5 rounded-full text-xs uppercase border ${
-                  subscription_status === 'free' ? 'bg-gray-100 text-gray-600 border-gray-200' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                  !has_active_subscription ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
                 }`}>
-                  {subscription_status === 'free' ? 'Free Version' : (subscription?.plan?.name || subscription_status)}
+                  {!has_active_subscription ? 'Free Version' : (subscription?.plan?.name || subscription_status)}
                 </span>
               </div>
 
-              {subscription_status !== 'free' && subscription && (
+              {/* Limits Summary Block */}
+              <div className="grid grid-cols-2 gap-3 mb-6 p-4 rounded-2xl bg-gray-50/80 border border-gray-100">
+                <div>
+                  <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Batas Anak</div>
+                  <div className="text-lg font-black text-gray-800 mt-0.5">
+                    {safeChildren.length} / {max_allowed_children} <span className="text-xs font-normal text-gray-500">Anak</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Akses Modul</div>
+                  <div className="text-lg font-black text-gray-800 mt-0.5">
+                    {has_active_subscription ? '13 Modul' : '1 Modul'} <span className="text-xs font-normal text-gray-500">{has_active_subscription ? 'Penuh' : 'Gratis'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {has_active_subscription && subscription ? (
                 <div className="space-y-4 mb-6">
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <Calendar className="w-5 h-5 text-gray-400" />
@@ -353,12 +417,28 @@ export default function ParentDashboard({ children = [], conversations: initialC
                     </div>
                   </div>
                 </div>
+              ) : (
+                <div className="mb-6 p-4 bg-orange-50/70 border border-orange-100 rounded-2xl">
+                  <p className="text-xs text-orange-900 leading-relaxed font-medium">
+                    Tingkatkan langganan Anda untuk membuka semua 13 modul edukasi interaktif dan menambah lebih banyak akun anak.
+                  </p>
+                </div>
               )}
             </div>
             
-            <Link href="/parent/billing" className="block text-center w-full py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-sm rounded-xl transition-colors border border-gray-200">
-              Kelola Pembayaran
-            </Link>
+            <div className="space-y-2">
+              {!has_active_subscription && (
+                <Link
+                  href="/pricing"
+                  className="block text-center w-full py-3.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-orange-500/20"
+                >
+                  Lihat Paket & Upgrade
+                </Link>
+              )}
+              <Link href="/parent/billing" className="block text-center w-full py-3 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold text-xs uppercase tracking-wider rounded-xl transition-colors border border-gray-200">
+                Kelola Pembayaran & Tagihan
+              </Link>
+            </div>
           </motion.div>
 
           {/* Recent Orders */}

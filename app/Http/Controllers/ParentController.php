@@ -53,9 +53,11 @@ class ParentController extends Controller
 
         $user->save();
 
-        // If role is parent, create children profiles
+        // If role is parent, create children profiles (enforcing maxAllowedChildren limit)
         if ($request->role === 'parent' && $request->has('children')) {
-            foreach ($request->children as $cData) {
+            $allowedCount = $user->maxAllowedChildren();
+            $childrenToAdd = array_slice($request->children, 0, $allowedCount);
+            foreach ($childrenToAdd as $cData) {
                 Child::create([
                     'id'           => (string) Str::uuid(),
                     'user_id'      => $user->id,
@@ -77,16 +79,32 @@ class ParentController extends Controller
 
     public function dashboard(): Response
     {
+        $user = auth()->user();
+
         // Load children eagerly with progress for the primary widget.
-        $children = Child::where('user_id', auth()->id())
+        $children = Child::where('user_id', $user->id)
             ->with('progress')
             ->get();
 
-        $user = auth()->user();
         $subscription = \App\Models\Subscription::with('plan')
             ->where('user_id', $user->id)
-            ->whereIn('status', ['active', 'past_due'])
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->where(function ($q) {
+                        $q->whereNull('current_period_end')
+                            ->orWhere('current_period_end', '>=', now());
+                    });
+            })
+            ->latest('current_period_end')
             ->first();
+
+        // Fallback to latest subscription if none active
+        if (!$subscription) {
+            $subscription = \App\Models\Subscription::with('plan')
+                ->where('user_id', $user->id)
+                ->latest('created_at')
+                ->first();
+        }
             
         $orders = \App\Models\Order::with(['plan', 'invoice', 'transaction'])
             ->where('user_id', $user->id)
@@ -97,7 +115,10 @@ class ParentController extends Controller
         return Inertia::render('Parent/Dashboard', [
             'children' => ChildResource::collection($children),
             'subscription' => $subscription,
-            'subscription_status' => $user->subscription_status,
+            'subscription_status' => $user->effective_subscription_status,
+            'has_active_subscription' => $user->hasActiveSubscription(),
+            'max_allowed_children' => $user->maxAllowedChildren(),
+            'children_count' => $children->count(),
             'recent_orders' => $orders,
             // Conversations are a secondary widget — defer them so the
             // dashboard shell is not blocked by this query.
@@ -113,15 +134,43 @@ class ParentController extends Controller
 
     public function children(): Response
     {
-        $children = Child::where('user_id', auth()->id())->get();
+        $user = auth()->user();
+        $children = Child::where('user_id', $user->id)->get();
 
         return Inertia::render('Parent/Children', [
             'children' => ChildResource::collection($children),
+            'has_active_subscription' => $user->hasActiveSubscription(),
+            'max_allowed_children' => $user->maxAllowedChildren(),
+            'children_count' => $children->count(),
         ]);
     }
 
     public function storeChild(Request $request)
     {
+        $user = auth()->user();
+        $currentChildrenCount = Child::where('user_id', $user->id)->count();
+        $maxAllowed = $user->maxAllowedChildren();
+
+        // Enforce backend child profile limit
+        if ($currentChildrenCount >= $maxAllowed) {
+            $errorMessage = $user->hasActiveSubscription()
+                ? "Paket Anda saat ini mengizinkan maksimal {$maxAllowed} anak. Upgrade paket untuk menambah profil anak."
+                : "Paket gratis Anda saat ini mengizinkan 1 anak. Berlangganan untuk membuka penambahan profil anak.";
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => $errorMessage,
+                    'limit_reached' => true,
+                    'max_allowed' => $maxAllowed,
+                    'current_count' => $currentChildrenCount,
+                ], 422);
+            }
+
+            return back()->withErrors([
+                'subscription_limit' => $errorMessage,
+            ])->with('limit_reached', true);
+        }
+
         $request->validate([
             'nickname'   => 'required|string|max:50',
             'gender'     => 'required|in:male,female',
@@ -130,7 +179,7 @@ class ParentController extends Controller
 
         Child::create([
             'id'           => (string) Str::uuid(),
-            'user_id'      => auth()->id(),
+            'user_id'      => $user->id,
             'nickname'     => $request->nickname,
             'gender'       => $request->gender,
             'birth_date'   => $request->birth_date,
@@ -157,8 +206,22 @@ class ParentController extends Controller
         $user = auth()->user();
         $subscription = \App\Models\Subscription::with('plan')
             ->where('user_id', $user->id)
-            ->whereIn('status', ['active', 'past_due'])
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->where(function ($q) {
+                        $q->whereNull('current_period_end')
+                            ->orWhere('current_period_end', '>=', now());
+                    });
+            })
+            ->latest('current_period_end')
             ->first();
+
+        if (!$subscription) {
+            $subscription = \App\Models\Subscription::with('plan')
+                ->where('user_id', $user->id)
+                ->latest('created_at')
+                ->first();
+        }
             
         $orders = \App\Models\Order::with(['plan', 'invoice', 'transaction'])
             ->where('user_id', $user->id)
@@ -166,9 +229,12 @@ class ParentController extends Controller
             ->paginate(20);
 
         return Inertia::render('Parent/Billing', [
-            'subscription_status' => $user->subscription_status,
-            'subscription' => $subscription,
-            'orders' => $orders
+            'subscription_status'     => $user->effective_subscription_status,
+            'has_active_subscription' => $user->hasActiveSubscription(),
+            'max_allowed_children'    => $user->maxAllowedChildren(),
+            'children_count'          => Child::where('user_id', $user->id)->count(),
+            'subscription'            => $subscription,
+            'orders'                  => $orders,
         ]);
     }
 

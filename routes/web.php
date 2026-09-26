@@ -32,6 +32,28 @@ Route::get('/demo-login', function () {
         ]
     );
 
+    if (!$demoUser->hasActiveSubscription()) {
+        $plan = \App\Models\Plan::firstOrCreate(
+            ['id' => 'premium_monthly'],
+            [
+                'name' => 'Premium Bulanan',
+                'price' => 79000,
+                'billing_cycle' => 'monthly',
+                'max_children' => 5,
+                'modules_included' => 'Semua Modul Edukasi + AR Interaktif',
+                'is_active' => true,
+            ]
+        );
+
+        \App\Models\Subscription::create([
+            'user_id' => $demoUser->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'current_period_start' => now(),
+            'current_period_end' => now()->addDays(365),
+        ]);
+    }
+
     \Illuminate\Support\Facades\Auth::login($demoUser);
     
     return redirect()->route('dashboard');
@@ -95,6 +117,7 @@ Route::middleware('auth')->group(function () {
     // 3. Admin Area (role: admin)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/analytics/revenue', [AdminController::class, 'revenueAnalyticsData'])->name('revenue.analytics');
 
         // Admin Payments
         Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
@@ -149,6 +172,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/module/{id}', [ChildController::class, 'module'])->name('module');
         Route::post('/module/{id}/progress', [ChildController::class, 'updateProgress'])->name('progress.update');
     });
+
+    // 7. Digfo AR Experience (Desktop view - requires auth)
+    Route::get('/ar', [\App\Http\Controllers\ArController::class, 'index'])->name('ar.index');
+    Route::get('/ar/{slug}/prepare', [\App\Http\Controllers\ArController::class, 'prepare'])->name('ar.prepare');
 });
+
+// 8. Digfo AR Experience (Mobile / Direct AR view)
+Route::get('/ar/view/{slug}', [\App\Http\Controllers\ArController::class, 'show'])->name('ar.show');
+Route::get('/ar/{slug}', [\App\Http\Controllers\ArController::class, 'show'])->name('ar.direct');
 
 require __DIR__ . '/auth.php';

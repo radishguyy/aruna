@@ -11,6 +11,7 @@ use App\Models\Child;
 use App\Models\Institution;
 use App\Models\Module;
 use App\Models\User;
+use App\Services\RevenueAnalyticsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -21,13 +22,16 @@ class AdminController extends Controller
 {
     /**
      * Admin Dashboard Overview
-     * Analytics counts are deferred so the shell loads instantly.
+     * Analytics counts and revenue charts are deferred for fast shell render.
      */
-    public function dashboard(): Response
+    public function dashboard(Request $request, RevenueAnalyticsService $analyticsService): Response
     {
+        $period = $request->query('period', 'last_30_days');
+        $granularity = $request->query('granularity');
+        $customStart = $request->query('start_date');
+        $customEnd = $request->query('end_date');
+
         return Inertia::render('Admin/Dashboard', [
-            // Defer all count queries — they run only after the page shell
-            // renders, preventing a slow initial load from N independent queries.
             'usersCount' => Inertia::defer(fn() => User::count()),
             'institutionsCount' => Inertia::defer(fn() => Institution::count()),
             'childrenCount' => Inertia::defer(fn() => Child::count()),
@@ -36,21 +40,44 @@ class AdminController extends Controller
             ),
             'modulesCount' => Inertia::defer(fn() => Module::count()),
             'articlesCount' => Inertia::defer(fn() => Article::count()),
-            // Recent users — select only required columns, wrapped in resource.
-            'recentUsers' => Inertia::defer(
-                fn() => UserResource::collection(
-                    User::select(['id', 'name', 'email', 'role', 'subscription_status', 'created_at'])
-                        ->latest()
-                        ->limit(5)
-                        ->get()
-                )
-            ),
             'arpu' => Inertia::defer(function () {
                 $totalRevenue = \App\Models\Order::where('status', 'paid')->sum('total_amount');
                 $totalUsers = User::count();
                 return $totalUsers > 0 ? $totalRevenue / $totalUsers : 0;
             }),
+            'recentUsers' => Inertia::defer(
+                fn() => UserResource::collection(
+                    User::with(['subscriptions.plan', 'institution'])
+                        ->latest()
+                        ->limit(8)
+                        ->get()
+                )
+            ),
+            'revenueAnalytics' => Inertia::defer(
+                fn() => $analyticsService->getAnalytics($period, $granularity, $customStart, $customEnd)
+            ),
+            'currentFilters' => [
+                'period' => $period,
+                'granularity' => $granularity,
+                'start_date' => $customStart,
+                'end_date' => $customEnd,
+            ],
         ]);
+    }
+
+    /**
+     * JSON Endpoint for dynamic AJAX chart reloading
+     */
+    public function revenueAnalyticsData(Request $request, RevenueAnalyticsService $analyticsService)
+    {
+        $period = $request->query('period', 'last_30_days');
+        $granularity = $request->query('granularity');
+        $customStart = $request->query('start_date');
+        $customEnd = $request->query('end_date');
+
+        return response()->json(
+            $analyticsService->getAnalytics($period, $granularity, $customStart, $customEnd)
+        );
     }
 
     /**
@@ -61,9 +88,8 @@ class AdminController extends Controller
         $search = $request->query('search');
         $role = $request->query('role');
 
-        $query = User::with('institution')
+        $query = User::with(['institution', 'subscriptions.plan'])
             ->withCount('children')
-            ->select(['id', 'name', 'email', 'role', 'subscription_status', 'institution_id', 'created_at'])
             ->latest();
 
         if ($search) {

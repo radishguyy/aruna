@@ -156,7 +156,7 @@ class DatabaseSeeder extends Seeder
                 'difficulty_level' => 1,
                 'is_premium' => false,
                 'content_data' => [
-                    'youtube_id' => '2g811Eo7K8U',
+                    'youtube_id' => 'dEeIw8tyUQE',
                     'startTime' => 0,
                     'description' => 'Video edukasi tentang keberanian menolak hal yang tidak nyaman.',
                 ],
@@ -206,7 +206,7 @@ class DatabaseSeeder extends Seeder
                 'difficulty_level' => 1,
                 'is_premium' => false,
                 'content_data' => [
-                    'youtube_id' => '5v6F_N_f_H4',
+                    'youtube_id' => 'IprFmqgEsKs',
                     'startTime' => 0,
                     'description' => 'Penjelasan visual tentang jenis sentuhan yang boleh dan dilarang.',
                 ],
@@ -255,7 +255,7 @@ class DatabaseSeeder extends Seeder
                 'difficulty_level' => 2,
                 'is_premium' => false,
                 'content_data' => [
-                    'youtube_id' => 'H6OdpQ8v2kM',
+                    'youtube_id' => '4Kg3B390QP8',
                     'startTime' => 0,
                     'description' => 'Tiga langkah cerdas saat menghadapi situasi bahaya.',
                 ],
@@ -288,7 +288,7 @@ class DatabaseSeeder extends Seeder
                 'difficulty_level' => 2,
                 'is_premium' => true,
                 'content_data' => [
-                    'youtube_id' => 'lG2h9N6R8Cg',
+                    'youtube_id' => 'iXMjUhGVhgo',
                     'startTime' => 0,
                     'description' => 'Mengapa kita tidak boleh menerima permen atau mainan dari orang tak dikenal.',
                 ],
@@ -338,7 +338,7 @@ class DatabaseSeeder extends Seeder
                 'difficulty_level' => 2,
                 'is_premium' => true,
                 'content_data' => [
-                    'youtube_id' => 'v-87cR3R9w8',
+                    'youtube_id' => 'IprFmqgEsKs',
                     'startTime' => 0,
                     'description' => 'Mengenal tempat-tempat yang aman untuk bermain.',
                 ],

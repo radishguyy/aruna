@@ -33,6 +33,8 @@ class ModuleListResource extends JsonResource
             // before serialization — forward them when present.
             'user_status'      => $this->when(isset($this->resource->user_status), $this->resource->user_status ?? null),
             'user_score'       => $this->when(isset($this->resource->user_score), $this->resource->user_score ?? null),
+            'is_free_module'   => $this->when(isset($this->resource->is_free_module), (bool) ($this->resource->is_free_module ?? false), $this->id === \App\Models\Module::getFreeModuleId()),
+            'is_locked'        => $this->when(isset($this->resource->is_locked), (bool) ($this->resource->is_locked ?? false), false),
         ];
     }
 }

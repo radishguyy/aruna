@@ -43,8 +43,14 @@ class User extends Authenticatable
         return $this->hasMany(Classroom::class, 'teacher_id');
     }
 
-    // If role == 'parent'
+    // If role == 'parent' (Child profiles in parent/child app)
     public function children(): HasMany
+    {
+        return $this->hasMany(Child::class, 'user_id');
+    }
+
+    // Students linked to parent (for classroom/school integrations)
+    public function students(): HasMany
     {
         return $this->hasMany(Student::class, 'parent_id');
     }
@@ -63,6 +69,101 @@ class User extends Authenticatable
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the current active subscription for the user.
+     */
+    public function activeSubscription()
+    {
+        return $this->hasOne(Subscription::class)
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->where(function ($q) {
+                        $q->whereNull('current_period_end')
+                            ->orWhere('current_period_end', '>=', now());
+                    });
+            })
+            ->latest('current_period_end');
+    }
+
+    /**
+     * Determine if the user has an active subscription.
+     */
+    public function hasActiveSubscription(): bool
+    {
+        if (in_array($this->role, ['admin', 'teacher'])) {
+            return true;
+        }
+
+        $activeSub = $this->activeSubscription()->first();
+        if ($activeSub && $activeSub->is_active) {
+            return true;
+        }
+
+        // Institution license check
+        if ($this->subscription_status === 'licensed' && $this->institution_id) {
+            $inst = $this->institution;
+            if ($inst && (!$inst->license_expires_at || $inst->license_expires_at->isFuture())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get effective subscription status ('free', 'standard', 'premium', 'licensed').
+     */
+    public function getEffectiveSubscriptionStatusAttribute(): string
+    {
+        if ($this->hasActiveSubscription()) {
+            if ($this->subscription_status && $this->subscription_status !== 'free') {
+                return $this->subscription_status;
+            }
+            $activeSub = $this->activeSubscription()->with('plan')->first();
+            if ($activeSub && $activeSub->plan_id) {
+                if (str_contains($activeSub->plan_id, 'institution')) return 'licensed';
+                if (str_contains($activeSub->plan_id, 'premium')) return 'premium';
+                return 'standard';
+            }
+            return 'premium';
+        }
+
+        return 'free';
+    }
+
+    /**
+     * Get maximum allowed children count based on subscription.
+     */
+    public function maxAllowedChildren(): int
+    {
+        if (!$this->hasActiveSubscription()) {
+            return 1; // Non-subscribed users: maximum 1 child profile
+        }
+
+        $activeSub = $this->activeSubscription()->with('plan')->first();
+        if ($activeSub && $activeSub->plan) {
+            return (int) ($activeSub->plan->max_children ?? 5);
+        }
+
+        if ($this->subscription_status === 'licensed') {
+            return 50;
+        }
+
+        if ($this->subscription_status === 'premium') {
+            return 5;
+        }
+
+        return 2;
+    }
+
+    /**
+     * Get the most recent subscription for the user.
+     */
+    public function latestSubscription()
+    {
+        return $this->hasOne(Subscription::class)->latest('current_period_end');
     }
 
     public function conversations(): HasMany

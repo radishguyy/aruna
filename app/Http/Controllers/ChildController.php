@@ -53,17 +53,23 @@ class ChildController extends Controller
         // Load badges eagerly once so awardBadges() won't trigger a second query.
         $child->load('badges');
 
+        $user = auth()->user();
+        $hasActiveSubscription = $user ? $user->hasActiveSubscription() : false;
+        $freeModuleId = Module::getFreeModuleId();
+
         $progress = Progress::where('child_id', $child->id)
             ->get()
             ->keyBy('module_id');
 
         $categories = ModuleCategory::with(['modules' => function ($q) {
             $q->select('id', 'category_id', 'title', 'slug', 'type', 'difficulty_level', 'is_premium', 'order')->orderBy('order');
-        }])->get()->map(function ($cat) use ($progress) {
-            $cat->modules->map(function ($mod) use ($progress) {
+        }])->get()->map(function ($cat) use ($progress, $hasActiveSubscription, $freeModuleId) {
+            $cat->modules->map(function ($mod) use ($progress, $hasActiveSubscription, $freeModuleId) {
                 $p                 = $progress->get($mod->id);
-                $mod->user_status  = $p ? $p->status : 'locked';
+                $mod->user_status  = $p ? $p->status : 'unstarted';
                 $mod->user_score   = $p ? $p->score : 0;
+                $mod->is_free_module = ($mod->id === $freeModuleId);
+                $mod->is_locked    = !$hasActiveSubscription && !$mod->is_free_module;
                 return $mod;
             });
             return $cat;
@@ -78,9 +84,22 @@ class ChildController extends Controller
             'modules' => ModuleListResource::collection($cat->modules)->resolve(),
         ]);
 
+        $arController = new ArController();
+        $arObjects = collect($arController->getAvailableObjects())->map(function ($obj, $index) use ($hasActiveSubscription) {
+            $isFree = ($index === 0);
+            $obj['is_free_module'] = $isFree;
+            $obj['is_locked'] = !$hasActiveSubscription && !$isFree;
+            $obj['qr_url'] = \Illuminate\Support\Facades\URL::signedRoute('ar.show', ['slug' => $obj['id']], now()->addHours(24));
+            return $obj;
+        })->values()->all();
+
         return Inertia::render('Child/Dashboard', [
-            'child'      => ChildResource::make($child),
-            'categories' => $categoriesData,
+            'child'                   => ChildResource::make($child),
+            'categories'              => $categoriesData,
+            'has_active_subscription' => $hasActiveSubscription,
+            'free_module_id'          => $freeModuleId,
+            'locked_prompt'           => session('locked_module_prompt'),
+            'ar_objects'              => $arObjects,
         ]);
     }
 
@@ -106,7 +125,26 @@ class ChildController extends Controller
             return redirect()->route('parent.children');
         }
 
-        $module   = Module::with('category')->findOrFail($id);
+        $module = Module::with('category')->findOrFail($id);
+        $user = auth()->user();
+
+        // Enforce backend access control: free tier can only access the free module
+        if (!$module->isAccessibleBy($user)) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'error' => 'Langganan aktif diperlukan untuk mengakses modul ini.',
+                    'requires_subscription' => true,
+                    'module_id' => $module->id,
+                ], 403);
+            }
+
+            return redirect()->route('child.dashboard')->with('locked_module_prompt', [
+                'id' => $module->id,
+                'title' => $module->title,
+                'message' => 'Langganan diperlukan untuk membuka modul ini dan mengakses seluruh materi pembelajaran.',
+            ]);
+        }
+
         $progress = Progress::where('child_id', $child->id)
             ->where('module_id', $id)
             ->first();
@@ -129,6 +167,17 @@ class ChildController extends Controller
         $child = $this->getActiveChild();
         if (!$child) {
             return response()->json(['error' => 'No active child profile'], 403);
+        }
+
+        $module = Module::findOrFail($id);
+        $user = auth()->user();
+
+        // Enforce backend permission check
+        if (!$module->isAccessibleBy($user)) {
+            return response()->json([
+                'error' => 'Langganan aktif diperlukan untuk menyimpan progres modul ini.',
+                'requires_subscription' => true,
+            ], 403);
         }
 
         $progress = Progress::updateOrCreate(

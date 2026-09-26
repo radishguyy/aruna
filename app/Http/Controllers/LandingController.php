@@ -21,6 +21,7 @@ class LandingController extends Controller
         return Inertia::render('Landing/Home', [
             // Strip full content body for the teaser cards on the home page.
             'articles' => ArticleListResource::collection($articles),
+            'plans' => \App\Models\Plan::where('is_active', true)->get(),
         ]);
     }
 

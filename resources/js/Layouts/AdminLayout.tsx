@@ -66,8 +66,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Content Wrapper */}
-        <div className="flex-grow w-full max-w-5xl mx-auto md:p-8">
-          <div className="md:bg-white md:rounded-[2.5rem] md:shadow-xl md:border border-slate-200 min-h-full pb-32 md:pb-12 relative md:overflow-hidden">
+        <div className="flex-grow w-full max-w-7xl mx-auto md:p-8">
+          <div className="md:bg-white md:rounded-[2.5rem] md:shadow-xl md:border border-slate-200 min-h-full pb-32 md:pb-12 relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={pathname}

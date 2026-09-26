@@ -15,14 +15,17 @@ class AuthUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                  => $this->id,
-            'name'                => $this->name,
-            'email'               => $this->email,
-            'role'                => $this->role,
-            'subscription_status' => $this->subscription_status,
+            'id'                      => $this->id,
+            'name'                    => $this->name,
+            'email'                   => $this->email,
+            'role'                    => $this->role,
+            'subscription_status'     => $this->effective_subscription_status,
+            'has_active_subscription' => $this->hasActiveSubscription(),
+            'max_allowed_children'    => $this->maxAllowedChildren(),
+            'children_count'          => $this->children()->count(),
             // email_verified_at is needed by UpdateProfileInformationForm to
             // show the "please verify your email" notice — include it here.
-            'email_verified_at'   => $this->email_verified_at,
+            'email_verified_at'       => $this->email_verified_at,
         ];
     }
 }

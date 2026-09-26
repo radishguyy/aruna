@@ -32,4 +32,38 @@ class Module extends Model
     {
         return $this->hasMany(Progress::class);
     }
+
+    /**
+     * Get the ID of the single module freely accessible to non-subscribed users.
+     */
+    public static function getFreeModuleId(): string
+    {
+        return static::orderBy('order')->value('id') ?? 'm-1';
+    }
+
+    /**
+     * Check if this module is the free preview module.
+     */
+    public function isFreePreview(): bool
+    {
+        return $this->id === static::getFreeModuleId();
+    }
+
+    /**
+     * Determine if a given user can access this module.
+     */
+    public function isAccessibleBy(?User $user): bool
+    {
+        // The designated free module is accessible to all users
+        if ($this->isFreePreview()) {
+            return true;
+        }
+
+        // Other modules require an authenticated user with an active subscription
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasActiveSubscription();
+    }
 }

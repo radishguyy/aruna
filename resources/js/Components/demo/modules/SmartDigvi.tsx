@@ -17,7 +17,7 @@ export default function SmartDigvi({ moduleId, module: moduleProp, onBack, onCom
   }
 
   const contentData = moduleData.content_data || {};
-  const youtube_id = contentData.youtube_id || '2g811Eo7K8U';
+  const youtube_id = contentData.youtube_id || 'iXMjUhGVhgo';
   const description = contentData.description || moduleData.description || '';
   const youtubeUrl = `https://www.youtube.com/embed/${youtube_id}?autoplay=0&rel=0&showinfo=0`;
 
