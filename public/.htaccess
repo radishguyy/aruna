@@ -23,3 +23,18 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+<IfModule mod_mime.c>
+    # Add MIME types for 3D formats so the browser/model-viewer can load them properly
+    AddType model/gltf-binary .glb
+    AddType model/gltf+json .gltf
+    AddType model/vnd.usdz+zip .usdz
+    AddType model/obj .obj
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Allow CORS for 3D models
+    <FilesMatch "\.(glb|gltf|usdz|obj)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>

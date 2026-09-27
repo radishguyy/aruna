@@ -15,5 +15,53 @@
                 }
             ]
         }
+    },
+    "karakter-laki-pose-1": {
+        "title": "Area Aman Cowok 1",
+        "description": "Pelajari area aman pada tubuh anak laki-laki dengan model 3D interaktif. Kenali bagian mana yang boleh disentuh dan tidak boleh disentuh.",
+        "educational_content": {
+            "facts": [
+                "Bibir, dada, kemaluan, dan pantat adalah area pribadi yang tidak boleh disentuh orang lain.",
+                "Hanya orang tua dan dokter yang boleh menyentuh area pribadi jika sedang sakit.",
+                "Berani bilang TIDAK jika ada yang menyentuh area pribadimu!"
+            ],
+            "labels": []
+        }
+    },
+    "karakter-laki-pose-2": {
+        "title": "Area Aman Cowok 2",
+        "description": "Lanjutan pembelajaran area aman tubuh anak laki-laki. Lindungi dirimu dan berani bilang TIDAK pada sentuhan yang membuat tidak nyaman.",
+        "educational_content": {
+            "facts": [
+                "Tubuhmu adalah milikmu. Kamu berhak menolak sentuhan siapapun.",
+                "Jangan pernah menyimpan rahasia buruk dari ayah dan ibu.",
+                "Lari dan teriak jika merasa terancam!"
+            ],
+            "labels": []
+        }
+    },
+    "karakter-cewe-pose-1": {
+        "title": "Area Aman Perempuan 1",
+        "description": "Pelajari area aman pada tubuh anak perempuan dengan model 3D interaktif. Kenali batasan sentuhan aman untuk melindungi dirimu.",
+        "educational_content": {
+            "facts": [
+                "Bibir, dada, kemaluan, dan pantat adalah area pribadi yang tertutup pakaian dalam.",
+                "Tidak ada yang boleh menyentuh atau melihat area pribadimu.",
+                "Lapor ke ayah atau ibu jika ada yang melanggar batasanmu."
+            ],
+            "labels": []
+        }
+    },
+    "karakter-cewe-pose-2": {
+        "title": "Area Aman Perempuan 2",
+        "description": "Mengenal batasan tubuh tingkat lanjut untuk anak perempuan. Pahami perasaan tidak nyaman dan jadilah pahlawan untuk dirimu sendiri.",
+        "educational_content": {
+            "facts": [
+                "Sentuhan aman adalah sentuhan yang membuatmu merasa disayangi, seperti pelukan ibu.",
+                "Sentuhan tidak aman membuat perutmu terasa aneh atau takut.",
+                "Berani cerita ke orang dewasa terpercaya!"
+            ],
+            "labels": []
+        }
     }
 }

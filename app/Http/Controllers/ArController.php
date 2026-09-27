@@ -74,7 +74,7 @@ class ArController extends Controller
                         'title' => $metadata['title'] ?? ucwords(str_replace('_', ' ', $nameWithoutExt)),
                         'description' => $metadata['description'] ?? 'Jelajahi objek pembelajaran 3D ini dalam Augmented Reality.',
                         'formats' => [],
-                        'file_path' => '/3d/' . $filename,
+                        'file_path' => asset('3d/' . $filename),
                         'glb_path' => null,
                         'usdz_path' => null,
                         'format' => $extension,
@@ -92,13 +92,13 @@ class ArController extends Controller
                 $grouped[$slug]['formats'][] = $extension;
 
                 if ($extension === 'glb' || $extension === 'gltf') {
-                    $grouped[$slug]['glb_path'] = '/3d/' . $filename;
-                    $grouped[$slug]['file_path'] = '/3d/' . $filename;
+                    $grouped[$slug]['glb_path'] = asset('3d/' . $filename);
+                    $grouped[$slug]['file_path'] = asset('3d/' . $filename);
                     $grouped[$slug]['format'] = $extension;
                 } elseif ($extension === 'usdz') {
-                    $grouped[$slug]['usdz_path'] = '/3d/' . $filename;
+                    $grouped[$slug]['usdz_path'] = asset('3d/' . $filename);
                     if (empty($grouped[$slug]['glb_path'])) {
-                        $grouped[$slug]['file_path'] = '/3d/' . $filename;
+                        $grouped[$slug]['file_path'] = asset('3d/' . $filename);
                         $grouped[$slug]['format'] = $extension;
                     }
                 }
