@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\Subscription;
+use App\Models\Child;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -15,188 +16,287 @@ class DemoUsersSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Delete existing demo users to reset
-        User::whereNotIn('email', [
+        // 1. Identify and delete the previous 700 demo users deterministically
+        $demoUsers = User::whereNotIn('email', [
             'rara@example.com',
             'admin@aruna.id',
             'sari@mentari.edu',
             'parent@home.com',
-            'teacher@school.com'
-        ])->where('role', 'parent')->delete();
+            'teacher@school.com',
+            'premium.demo@aruna.id',
+        ])->where('role', 'parent')->get();
 
-        Order::query()->delete();
-        Subscription::query()->delete();
+        $demoUserIds = $demoUsers->pluck('id');
 
-        $faker = null;
-        if (class_exists(\Faker\Factory::class)) {
-            $faker = \Faker\Factory::create('id_ID');
+        if ($demoUserIds->isNotEmpty()) {
+            Subscription::whereIn('user_id', $demoUserIds)->delete();
+            Order::whereIn('user_id', $demoUserIds)->delete();
+            Child::whereIn('user_id', $demoUserIds)->delete();
+            User::whereIn('id', $demoUserIds)->delete();
         }
 
-        $indonesianFirstNames = [
-            'Ahmad', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fajar', 'Gita', 'Hadi', 'Indah', 'Joko',
-            'Kartika', 'Lestari', 'Muhammad', 'Nur', 'Oki', 'Putri', 'Rahmat', 'Siti', 'Tri', 'Utami',
-            'Wahyu', 'Yusuf', 'Zul', 'Rian', 'Bayu', 'Dian', 'Fitri', 'Hendra', 'Intan', 'Mega',
-            'Nanda', 'Pratama', 'Rini', 'Surya', 'Taufik', 'Vina', 'Wulan', 'Agus', 'Anisa', 'Bambang',
-            'Chandra', 'Desi', 'Edi', 'Farah', 'Gilang', 'Hesti', 'Imam', 'Jihan', 'Kurniawan', 'Maya',
-            'Rizky', 'Aditya', 'Ayu', 'Bagus', 'Dwi', 'Endah', 'Firman', 'Gunawan', 'Hasan', 'Ilham'
-        ];
+        // Clean any past demo orders from premium.demo user to preserve exact target revenue
+        $premiumDemo = User::where('email', 'premium.demo@aruna.id')->first();
+        if ($premiumDemo) {
+            Order::where('user_id', $premiumDemo->id)->delete();
+        }
 
-        $indonesianLastNames = [
-            'Pratama', 'Saputra', 'Wijaya', 'Kusuma', 'Hidayat', 'Santoso', 'Setiawan', 'Nugroho', 'Lestari', 'Wulandari',
-            'Permana', 'Gunawan', 'Siregar', 'Nasution', 'Batubara', 'Pangestu', 'Suharto', 'Yuliana', 'Anggraini', 'Mahendra',
-            'Kurniawan', 'Ramadhan', 'Utomo', 'Wicaksono', 'Subagyo', 'Purwanto', 'Susanto', 'Hartono', 'Sari', 'Handayani',
-            'Firmansyah', 'Budiman', 'Wibowo', 'Cahyono', 'Irawan', 'Prasetyo', 'Hermawan', 'Mulyadi', 'Simanjuntak', 'Siregar'
-        ];
+        // 2. Fetch or create standard application plans
+        $standardMonthly = Plan::where('id', 'standard_monthly')->first() ?? Plan::firstOrCreate(
+            ['id' => 'standard_monthly'],
+            [
+                'name' => 'Paket Standar',
+                'price' => 25000.00,
+                'billing_cycle' => 'monthly',
+                'max_children' => 2,
+                'is_active' => true,
+            ]
+        );
 
-        $domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'mail.com', 'aruna.id'];
-
-        $monthlyPlan = Plan::firstOrCreate(
+        $premiumMonthly = Plan::where('id', 'premium_monthly')->first() ?? Plan::firstOrCreate(
             ['id' => 'premium_monthly'],
             [
                 'name' => 'Paket Premium (Bulanan)',
                 'price' => 50000.00,
                 'billing_cycle' => 'monthly',
-                'features' => ['Semua Modul Edukasi', 'Simulasi AR Immersive'],
+                'max_children' => 5,
                 'is_active' => true,
             ]
         );
-        $annualPlan = Plan::firstOrCreate(
+
+        $premiumAnnual = Plan::where('id', 'premium_annual')->first() ?? Plan::firstOrCreate(
             ['id' => 'premium_annual'],
             [
                 'name' => 'Paket Premium (Tahunan)',
-                'price' => 450000.00,
-                'billing_cycle' => 'yearly',
-                'features' => ['Semua Modul Edukasi', 'Simulasi AR Immersive', 'Bonus PDF'],
+                'price' => 480000.00,
+                'billing_cycle' => 'annual',
+                'max_children' => 5,
                 'is_active' => true,
             ]
         );
 
-        $password = Hash::make('password');
+        // 3. Generate exactly 700 new demo users with realistic Indonesian names & unique @gmail.com addresses
+        $firstNames = [
+            'Ahmad', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fajar', 'Gita', 'Hadi', 'Indah', 'Joko',
+            'Kartika', 'Lestari', 'Muhammad', 'Nur', 'Oki', 'Putri', 'Rahmat', 'Siti', 'Tri', 'Utami',
+            'Wahyu', 'Yusuf', 'Zulfikar', 'Rian', 'Bayu', 'Dian', 'Fitri', 'Hendra', 'Intan', 'Mega',
+            'Nanda', 'Pratama', 'Rini', 'Surya', 'Taufik', 'Vina', 'Wulan', 'Agus', 'Anisa', 'Bambang',
+            'Chandra', 'Desi', 'Edi', 'Farah', 'Gilang', 'Hesti', 'Imam', 'Jihan', 'Kurniawan', 'Maya',
+            'Rizky', 'Aditya', 'Ayu', 'Bagus', 'Dwi', 'Endah', 'Firman', 'Gunawan', 'Hasan', 'Ilham',
+            'Nabila', 'Fauzan', 'Salsabila', 'Alif', 'Dimas', 'Danang', 'Aris', 'Aulia', 'Bella', 'Clarissa',
+            'Devi', 'Doni', 'Erwin', 'Febri', 'Ghani', 'Hana', 'Irfan', 'Kharisma', 'Luthfi', 'Maulana',
+            'Nadira', 'Pandu', 'Raditya', 'Reza', 'Safira', 'Tari', 'Vicky', 'Yogi', 'Zahra', 'Arif',
+            'Bagas', 'Cahya', 'Dina', 'Fikri', 'Haris', 'Latifah', 'Naufal', 'Rasyid', 'Syifa', 'Zaki'
+        ];
+
+        $lastNames = [
+            'Pratama', 'Saputra', 'Wijaya', 'Kusuma', 'Hidayat', 'Santoso', 'Setiawan', 'Nugroho', 'Lestari', 'Wulandari',
+            'Permana', 'Gunawan', 'Siregar', 'Nasution', 'Batubara', 'Pangestu', 'Suharto', 'Yuliana', 'Anggraini', 'Mahendra',
+            'Kurniawan', 'Ramadhan', 'Utomo', 'Wicaksono', 'Subagyo', 'Purwanto', 'Susanto', 'Hartono', 'Sari', 'Handayani',
+            'Firmansyah', 'Budiman', 'Wibowo', 'Cahyono', 'Irawan', 'Prasetyo', 'Hermawan', 'Mulyadi', 'Simanjuntak', 'Fauzi',
+            'Alamsyah', 'Hakim', 'Hambali', 'Iskandar', 'Kadir', 'Lubis', 'Mansur', 'Marzuki', 'Nasir', 'Pasaribu',
+            'Raharjo', 'Rasyid', 'Saleh', 'Syahputra', 'Tanjung', 'Yasin', 'Zulkarnain', 'Anwar', 'Basri', 'Darmawan'
+        ];
 
         $totalUsersToGenerate = 700;
-        $usersWithHistory = 450;
-        $activeSubscribersTarget = 445;
-
-        // Base date for "as of Sept 25, 2026" logic
-        $referenceDate = Carbon::parse('2026-09-25 12:00:00');
-        
+        $password = Hash::make('password');
+        $usedEmails = [];
         $usersToInsert = [];
+
+        // Reference date for calculations: Sept 25, 2026
+        $refDate = Carbon::parse('2026-09-25 12:00:00');
+
         for ($i = 0; $i < $totalUsersToGenerate; $i++) {
-            if ($faker) {
-                $name = $faker->name();
-                $email = $faker->unique()->safeEmail();
-            } else {
-                $first = $indonesianFirstNames[array_rand($indonesianFirstNames)];
-                $last = $indonesianLastNames[array_rand($indonesianLastNames)];
-                $name = $first . ' ' . $last;
-                $email = Str::slug($first) . '.' . Str::slug($last) . '.' . Str::random(5) . '@' . $domains[array_rand($domains)];
+            $first = $firstNames[array_rand($firstNames)];
+            $last = $lastNames[array_rand($lastNames)];
+            $name = $first . ' ' . $last;
+
+            $slugFirst = strtolower(preg_replace('/[^a-z0-9]/', '', $first));
+            $slugLast = strtolower(preg_replace('/[^a-z0-9]/', '', $last));
+
+            $emailCandidates = [
+                "{$slugFirst}.{$slugLast}@gmail.com",
+                "{$slugFirst}{$slugLast}@gmail.com",
+                "{$slugLast}.{$slugFirst}@gmail.com",
+                "{$slugFirst}.{$slugLast}" . rand(1, 99) . "@gmail.com",
+                "{$slugFirst}{$slugLast}" . rand(10, 99) . "@gmail.com",
+                "{$slugFirst}_" . substr($slugLast, 0, 1) . rand(1, 99) . "@gmail.com",
+                "{$slugFirst}." . substr($slugLast, 0, 1) . rand(10, 999) . "@gmail.com",
+            ];
+
+            $email = null;
+            foreach ($emailCandidates as $cand) {
+                if (!isset($usedEmails[$cand])) {
+                    $email = $cand;
+                    $usedEmails[$cand] = true;
+                    break;
+                }
             }
+
+            while (!$email) {
+                $cand = "{$slugFirst}.{$slugLast}" . rand(100, 99999) . "@gmail.com";
+                if (!isset($usedEmails[$cand])) {
+                    $email = $cand;
+                    $usedEmails[$cand] = true;
+                    break;
+                }
+            }
+
+            // User registered between Feb 1, 2026 and Sept 25, 2026 (approx 236 days)
+            $regDaysAgo = rand(0, 236);
+            $userCreatedAt = $refDate->copy()->subDays($regDaysAgo)->subHours(rand(1, 12));
 
             $usersToInsert[] = [
                 'name' => $name,
                 'email' => $email,
-                'email_verified_at' => now(),
+                'email_verified_at' => $userCreatedAt,
                 'password' => $password,
                 'role' => 'parent',
                 'subscription_status' => 'free',
                 'remember_token' => Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => $userCreatedAt,
+                'updated_at' => $userCreatedAt,
             ];
         }
 
-        // Chunk insert users
+        // Chunk insert 700 users
         foreach (array_chunk($usersToInsert, 100) as $chunk) {
             User::insert($chunk);
         }
 
-        // Fetch inserted users to attach orders
+        // Fetch inserted replacement users
         $allDemoUsers = User::whereNotIn('email', [
             'rara@example.com',
             'admin@aruna.id',
             'sari@mentari.edu',
             'parent@home.com',
-            'teacher@school.com'
-        ])->where('role', 'parent')->get();
+            'teacher@school.com',
+            'premium.demo@aruna.id',
+        ])->where('role', 'parent')->orderBy('id')->get();
 
-        $historyUsers = $allDemoUsers->take($usersWithHistory);
-        
+        // 4. Subscriptions & Orders distribution
+        // Mathematical distribution for exact target revenue Rp 22,750,000 across 450 users:
+        // - 10 Annual (Rp 480,000) = Rp 4,800,000
+        // - 278 Premium Monthly (Rp 50,000) = Rp 13,900,000
+        // - 162 Standard Monthly (Rp 25,000) = Rp 4,050,000
+        // Total Revenue = Rp 22,750,000
+        // Total Subscribed Users = 450
+        // Active on Sept 25, 2026 = 446 (>= 445 target)
+        // Expired on Sept 25, 2026 = 4 (446 + 4 = 450 total)
+
         $ordersToInsert = [];
         $subscriptionsToInsert = [];
 
-        $activeCount = 0;
-        
-        foreach ($historyUsers as $idx => $user) {
-            // Distribute paid_at dates from Feb 1, 2026 to Sept 25, 2026
-            // Days between Feb 1 and Sept 25 = ~236 days
-            $daysAgo = rand(0, 236);
-            $orderTime = Carbon::parse('2026-09-25 12:00:00')->subDays($daysAgo);
-            
-            $isBeforeAugust = $orderTime->lt(Carbon::parse('2026-08-01'));
-            $paymentProof = $isBeforeAugust ? 'Already paid via WhatsApp' : '/images/payments/demo-proof.jpg';
+        $specs = [];
 
-            // Determine if they should be active
-            $shouldBeActive = $activeCount < $activeSubscribersTarget;
-            
-            if ($shouldBeActive) {
-                // If they ordered a long time ago, give them an annual plan so they are still active,
-                // or assume they just renewed (make the period_end in the future).
-                $plan = $annualPlan;
-                $periodEnd = $orderTime->copy()->addDays(365);
-                // Ensure it's active based on reference date
-                if ($periodEnd->lt($referenceDate)) {
-                    // force renewal logic by making it 1-month active from near Sept 25
-                    $orderTime = $referenceDate->copy()->subDays(rand(1, 20));
-                    $periodEnd = $orderTime->copy()->addDays(30);
-                    $plan = $monthlyPlan;
-                    $isBeforeAugust = $orderTime->lt(Carbon::parse('2026-08-01'));
-                    $paymentProof = $isBeforeAugust ? 'Already paid via WhatsApp' : '/images/payments/demo-proof.jpg';
-                }
-                $activeCount++;
-                $user->subscription_status = 'premium';
-            } else {
-                // Expired
-                $plan = $monthlyPlan;
-                $periodEnd = $orderTime->copy()->addDays(30);
-                if ($periodEnd->gt($referenceDate)) {
-                    // force expired by pulling date back
-                    $orderTime = $referenceDate->copy()->subDays(rand(35, 100));
-                    $periodEnd = $orderTime->copy()->addDays(30);
-                    $isBeforeAugust = $orderTime->lt(Carbon::parse('2026-08-01'));
-                    $paymentProof = $isBeforeAugust ? 'Already paid via WhatsApp' : '/images/payments/demo-proof.jpg';
-                }
-                $user->subscription_status = 'free';
-            }
-            $user->save();
+        // Group 1: 10 Annual Active Subscriptions (distributed Feb - Aug 2026)
+        // Duration: 365 days -> all active as of Sept 25, 2026
+        for ($i = 0; $i < 10; $i++) {
+            $daysAgo = 230 - ($i * 19); // Spreads evenly from ~Feb 7 to ~Aug 16
+            $startDate = $refDate->copy()->subDays($daysAgo)->subHours(rand(1, 10));
+            $specs[] = [
+                'plan' => $premiumAnnual,
+                'is_active' => true,
+                'start_date' => $startDate,
+                'duration_days' => 365,
+            ];
+        }
+
+        // Group 2: 4 Expired Monthly Subscriptions (started Feb - Jun 2026, expired after 30 days)
+        $expiredSpecs = [
+            ['plan' => $standardMonthly, 'days_ago' => 210], // ~Feb 27
+            ['plan' => $premiumMonthly,  'days_ago' => 170], // ~April 8
+            ['plan' => $standardMonthly, 'days_ago' => 130], // ~May 18
+            ['plan' => $premiumMonthly,  'days_ago' => 90],  // ~June 27
+        ];
+        foreach ($expiredSpecs as $esp) {
+            $startDate = $refDate->copy()->subDays($esp['days_ago'])->subHours(rand(1, 10));
+            $specs[] = [
+                'plan' => $esp['plan'],
+                'is_active' => false,
+                'start_date' => $startDate,
+                'duration_days' => 30,
+            ];
+        }
+
+        // Group 3: 276 Active Premium Monthly Subscriptions
+        // Duration: 30 days. For active as of Sept 25, 2026: start between Aug 27 and Sept 25 (0 to 28 days ago)
+        for ($i = 0; $i < 276; $i++) {
+            $daysAgo = rand(0, 28);
+            $startDate = $refDate->copy()->subDays($daysAgo)->subHours(rand(1, 12))->subMinutes(rand(0, 59));
+            $specs[] = [
+                'plan' => $premiumMonthly,
+                'is_active' => true,
+                'start_date' => $startDate,
+                'duration_days' => 30,
+            ];
+        }
+
+        // Group 4: 160 Active Standard Monthly Subscriptions
+        for ($i = 0; $i < 160; $i++) {
+            $daysAgo = rand(0, 28);
+            $startDate = $refDate->copy()->subDays($daysAgo)->subHours(rand(1, 12))->subMinutes(rand(0, 59));
+            $specs[] = [
+                'plan' => $standardMonthly,
+                'is_active' => true,
+                'start_date' => $startDate,
+                'duration_days' => 30,
+            ];
+        }
+
+        // Shuffle specs so plans and dates are naturally distributed among users
+        shuffle($specs);
+
+        $historyUsers = $allDemoUsers->take(450);
+        $userStatusUpdates = [];
+
+        foreach ($historyUsers as $index => $user) {
+            $spec = $specs[$index];
+            $plan = $spec['plan'];
+            $isActive = $spec['is_active'];
+            $startDate = $spec['start_date'];
+            $endDate = $startDate->copy()->addDays($spec['duration_days']);
+
+            // Payment proof logic:
+            // - Subscriptions before August 2026: 'Already paid via WhatsApp'
+            // - Subscriptions from August 2026 onward: 'images/payments/demo-proof.jpg'
+            $isBeforeAugust = $startDate->lt(Carbon::parse('2026-08-01 00:00:00'));
+            $paymentProof = $isBeforeAugust ? 'Already paid via WhatsApp' : 'images/payments/demo-proof.jpg';
+
+            $userStatus = $isActive ? 'premium' : 'free';
+            $userStatusUpdates[$user->id] = $userStatus;
 
             $ordersToInsert[] = [
                 'id' => (string) Str::uuid(),
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
                 'subtotal' => $plan->price,
+                'unique_code' => 0,
+                'discount_amount' => 0,
                 'tax_amount' => 0,
                 'total_amount' => $plan->price,
-                'payment_method' => 'bank_transfer',
+                'payment_method' => $isBeforeAugust ? 'whatsapp' : 'bank_transfer',
                 'payment_proof_path' => $paymentProof,
                 'status' => 'paid',
-                'paid_at' => $orderTime,
-                'created_at' => $orderTime,
-                'updated_at' => $orderTime,
+                'paid_at' => $startDate,
+                'created_at' => $startDate,
+                'updated_at' => $startDate,
             ];
 
             $subscriptionsToInsert[] = [
                 'id' => (string) Str::uuid(),
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
-                'status' => $shouldBeActive ? 'active' : 'expired',
-                'current_period_start' => $orderTime,
-                'current_period_end' => $periodEnd,
-                'auto_renew' => $shouldBeActive,
-                'created_at' => $orderTime,
-                'updated_at' => $orderTime,
+                'status' => $isActive ? 'active' : 'expired',
+                'current_period_start' => $startDate,
+                'current_period_end' => $endDate,
+                'auto_renew' => $isActive,
+                'created_at' => $startDate,
+                'updated_at' => $startDate,
             ];
         }
 
+        // Bulk insert orders and subscriptions
         foreach (array_chunk($ordersToInsert, 100) as $chunk) {
             Order::insert($chunk);
         }
@@ -204,7 +304,12 @@ class DemoUsersSeeder extends Seeder
             Subscription::insert($chunk);
         }
 
-        // Explicitly create premium.demo@aruna.id user to keep test cases working
+        // Update user subscription_status
+        foreach ($userStatusUpdates as $userId => $status) {
+            User::where('id', $userId)->update(['subscription_status' => $status]);
+        }
+
+        // Ensure premium.demo user exists for login tests without extra paid order
         $demoUser = User::firstOrCreate(
             ['email' => 'premium.demo@aruna.id'],
             [
@@ -215,29 +320,18 @@ class DemoUsersSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-        if (!Order::where('user_id', $demoUser->id)->exists()) {
-            Order::create([
+        Subscription::firstOrCreate(
+            ['user_id' => $demoUser->id],
+            [
                 'id' => (string) Str::uuid(),
-                'user_id' => $demoUser->id,
-                'plan_id' => $monthlyPlan->id,
-                'subtotal' => $monthlyPlan->price,
-                'tax_amount' => 0,
-                'total_amount' => $monthlyPlan->price,
-                'payment_method' => 'bank_transfer',
-                'payment_proof_path' => '/images/payments/demo-proof.jpg',
-                'status' => 'paid',
-                'paid_at' => now(),
-            ]);
-            Subscription::create([
-                'user_id' => $demoUser->id,
-                'plan_id' => $monthlyPlan->id,
+                'plan_id' => $premiumMonthly->id,
                 'status' => 'active',
-                'current_period_start' => now()->subDays(5),
-                'current_period_end' => now()->addDays(25),
+                'current_period_start' => $refDate->copy()->subDays(5),
+                'current_period_end' => $refDate->copy()->addDays(25),
                 'auto_renew' => true,
-            ]);
-        }
+            ]
+        );
 
-        $this->command?->info("DemoUsersSeeder completed: 700 users created, 450 with history, 445 active as of Sept 25, 2026.");
+        $this->command?->info("DemoUsersSeeder completed: 700 users created, 450 with subscription history, 446 active as of Sept 25, 2026. Target revenue Rp 22,750,000.");
     }
 }

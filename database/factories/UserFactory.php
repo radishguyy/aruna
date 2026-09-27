@@ -24,11 +24,14 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create() : null);
+        $faker = $this->faker ?? (class_exists(\Faker\Factory::class) ? \Faker\Factory::create('id_ID') : null);
+        $name = $faker?->name() ?? ('User ' . Str::random(5));
+        $cleanName = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '.', trim($name)));
+        $email = trim($cleanName, '.') . rand(1, 999) . '@gmail.com';
 
         return [
-            'name' => $faker?->name() ?? 'User ' . Str::random(5),
-            'email' => $faker?->unique()->safeEmail() ?? ('user_' . Str::random(8) . '@example.com'),
+            'name' => $name,
+            'email' => $email,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

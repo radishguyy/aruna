@@ -170,7 +170,9 @@ export default function PaymentShow({ order }: Props) {
                 const proofImageUrl = order.payment_proof_path
                   ? (order.payment_proof_path.startsWith('/') || order.payment_proof_path.startsWith('http')
                       ? order.payment_proof_path
-                      : `/storage/${order.payment_proof_path}`)
+                      : (order.payment_proof_path.startsWith('images/')
+                          ? `/${order.payment_proof_path}`
+                          : `/storage/${order.payment_proof_path}`))
                   : '/images/payments/demo-proof.jpg';
 
                 return (
