@@ -135,7 +135,7 @@ export default function PaymentShow({ order }: Props) {
             </div>
 
             {order.status === 'pending_approval' && (
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button
                   onClick={() => setIsApproveModalOpen(true)}
                   className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2"
@@ -157,6 +157,16 @@ export default function PaymentShow({ order }: Props) {
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Bukti Transfer</h3>
             <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-center p-4 overflow-hidden relative">
               {(() => {
+                if (order.payment_proof_path === 'Already paid via WhatsApp') {
+                  return (
+                    <div className="w-full h-full min-h-[300px] flex flex-col items-center justify-center text-slate-500 text-center gap-3">
+                       <CheckCircle className="w-12 h-12 text-emerald-500" />
+                       <p className="font-bold text-lg text-slate-700">Sudah Lunas via WhatsApp</p>
+                       <p className="text-sm">Pembayaran ini dikonfirmasi secara manual melalui WhatsApp.</p>
+                    </div>
+                  );
+                }
+
                 const proofImageUrl = order.payment_proof_path
                   ? (order.payment_proof_path.startsWith('/') || order.payment_proof_path.startsWith('http')
                       ? order.payment_proof_path
@@ -183,7 +193,7 @@ export default function PaymentShow({ order }: Props) {
       {/* Modal Approve */}
       {isApproveModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white w-full max-w-md rounded-3xl p-6 md:p-8 shadow-2xl">
             <h2 className="text-2xl font-black text-slate-800 mb-2">Setujui Pembayaran</h2>
             <p className="text-slate-500 mb-6 text-sm">Berapa lama durasi langganan untuk paket ini?</p>
             <form onSubmit={handleApprove} className="space-y-6">
@@ -199,7 +209,7 @@ export default function PaymentShow({ order }: Props) {
                 />
                 <p className="text-xs text-slate-400 mt-2">Standar: 30 hari untuk bulanan, 365 hari untuk tahunan.</p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button type="button" onClick={() => setIsApproveModalOpen(false)} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl">Batal</button>
                 <button type="submit" disabled={processingApprove} className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md">Setujui & Aktifkan</button>
               </div>
@@ -211,7 +221,7 @@ export default function PaymentShow({ order }: Props) {
       {/* Modal Reject */}
       {isRejectModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white w-full max-w-md rounded-3xl p-6 md:p-8 shadow-2xl">
             <h2 className="text-2xl font-black text-slate-800 mb-2">Tolak Pembayaran</h2>
             <p className="text-slate-500 mb-6 text-sm">Berikan alasan penolakan agar pelanggan tahu.</p>
             <form onSubmit={handleReject} className="space-y-6">
@@ -225,7 +235,7 @@ export default function PaymentShow({ order }: Props) {
                   placeholder="Cth: Nominal transfer tidak sesuai"
                 />
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button type="button" onClick={() => setIsRejectModalOpen(false)} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl">Batal</button>
                 <button type="submit" disabled={processingReject} className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl shadow-md">Tolak Pembayaran</button>
               </div>

@@ -265,16 +265,16 @@ export default function AdminCms({ articles: articlesProp, modules: modulesProp 
         {/* Modal Tambah Artikel */}
         {isAddArticleOpen && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-xl rounded-3xl p-8 shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200">
+            <div className="bg-white w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
               <button
                 onClick={() => setIsAddArticleOpen(false)}
-                className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
+                className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h2 className="text-2xl font-black text-slate-800 mb-1">Tambah Artikel Jurnal Baru</h2>
-              <p className="text-slate-500 text-sm mb-6">Terbitkan artikel tips parenting dan edukasi.</p>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-1">Tambah Artikel Jurnal Baru</h2>
+              <p className="text-slate-500 text-xs md:text-sm mb-6">Terbitkan artikel tips parenting dan edukasi.</p>
 
               <form onSubmit={handleCreateArticle} className="space-y-4">
                 <div>
@@ -289,7 +289,7 @@ export default function AdminCms({ articles: articlesProp, modules: modulesProp 
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Kategori</label>
                     <select
@@ -365,16 +365,16 @@ export default function AdminCms({ articles: articlesProp, modules: modulesProp 
         {/* Modal Tambah Modul */}
         {isAddModuleOpen && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200">
+            <div className="bg-white w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
               <button
                 onClick={() => setIsAddModuleOpen(false)}
-                className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
+                className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h2 className="text-2xl font-black text-slate-800 mb-1">Tambah Modul Edukasi Baru</h2>
-              <p className="text-slate-500 text-sm mb-6">Tambahkan materi pembelajaran interaktif anak.</p>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-1">Tambah Modul Edukasi Baru</h2>
+              <p className="text-slate-500 text-xs md:text-sm mb-6">Tambahkan materi pembelajaran interaktif anak.</p>
 
               <form onSubmit={handleCreateModule} className="space-y-4">
                 <div>
@@ -389,7 +389,7 @@ export default function AdminCms({ articles: articlesProp, modules: modulesProp 
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Tipe Modul</label>
                     <select

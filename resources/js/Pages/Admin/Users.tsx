@@ -486,16 +486,16 @@ export default function AdminUsers({ users: usersProp, filters }: Props) {
         {/* Modal Tambah Pengguna */}
         {isAddModalOpen && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200">
+            <div className="bg-white w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl relative border border-slate-100 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
+                className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h2 className="text-2xl font-black text-slate-800 mb-1">Tambah Pengguna Baru</h2>
-              <p className="text-slate-500 text-sm mb-6">Buat akun baru untuk platform Aruna.</p>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-1">Tambah Pengguna Baru</h2>
+              <p className="text-slate-500 text-xs md:text-sm mb-6">Buat akun baru untuk platform Aruna.</p>
 
               <form onSubmit={handleCreateUser} className="space-y-4">
                 <div>
@@ -540,7 +540,7 @@ export default function AdminUsers({ users: usersProp, filters }: Props) {
                   {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase block mb-1">
                       Peran
