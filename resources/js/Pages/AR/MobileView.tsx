@@ -80,11 +80,27 @@ export default function MobileView({ object }: { object: ARObject }) {
 
     const isApple = isAppleDevice();
 
+    // Model URL helper - safely handles HTTPS mixed content and relative fallback
+    const resolveModelUrl = (path?: string | null) => {
+        if (!path) return null;
+        if (typeof window !== 'undefined' && window.location.protocol === 'https:' && path.startsWith('http:')) {
+            return path.replace(/^http:/, 'https:');
+        }
+        return path;
+    };
+
     // Model paths
-    const glbSrc = object?.glb_path || (object?.format === 'glb' || object?.format === 'gltf' ? object?.file_path : null);
-    const usdzSrc = object?.usdz_path || (object?.format === 'usdz' ? object?.file_path : null);
+    const rawGlb = object?.glb_path || (object?.format === 'glb' || object?.format === 'gltf' ? object?.file_path : null);
+    const rawUsdz = object?.usdz_path || (object?.format === 'usdz' ? object?.file_path : null);
+    const glbSrc = resolveModelUrl(rawGlb);
+    const usdzSrc = resolveModelUrl(rawUsdz);
     const hasGlb = !!glbSrc;
     const hasUsdz = !!usdzSrc;
+
+    // Model loading & progress state
+    const [modelDownloadProgress, setModelDownloadProgress] = useState(0);
+    const [isModelReady, setIsModelReady] = useState(false);
+    const [modelError, setModelError] = useState<string | null>(null);
 
     useEffect(() => {
         // Detect WebXR capability
@@ -109,18 +125,35 @@ export default function MobileView({ object }: { object: ARObject }) {
                 setIsLoading(false);
             });
 
-        // Fail-safe timer
+        // Fail-safe timer for framework init
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 1200);
+        }, 1000);
 
         return () => clearTimeout(timer);
     }, []);
 
-    // Listen to model-viewer AR events (catches ARCore / Scene Viewer launch failure)
+    // Listen to model-viewer events (progress, load, error, ar-status)
     useEffect(() => {
         const viewer = modelViewerRef.current;
         if (!viewer) return;
+
+        const handleProgress = (event: any) => {
+            const raw = event.detail?.totalProgress ?? 0;
+            const pct = Math.min(100, Math.max(0, Math.round(raw * 100)));
+            setModelDownloadProgress(pct);
+        };
+
+        const handleLoad = () => {
+            setIsModelReady(true);
+            setModelError(null);
+            setModelDownloadProgress(100);
+        };
+
+        const handleError = (event: any) => {
+            console.warn('Model viewer asset load error:', event);
+            setModelError('Gagal memuat file model 3D. Periksa koneksi internet atau muat ulang.');
+        };
 
         const handleArStatus = (event: any) => {
             const status = event.detail?.status;
@@ -130,11 +163,34 @@ export default function MobileView({ object }: { object: ARObject }) {
             }
         };
 
+        viewer.addEventListener('progress', handleProgress);
+        viewer.addEventListener('load', handleLoad);
+        viewer.addEventListener('error', handleError);
         viewer.addEventListener('ar-status', handleArStatus);
+
         return () => {
+            viewer.removeEventListener('progress', handleProgress);
+            viewer.removeEventListener('load', handleLoad);
+            viewer.removeEventListener('error', handleError);
             viewer.removeEventListener('ar-status', handleArStatus);
         };
-    }, [isModelViewerLoaded, viewMode]);
+    }, [isModelViewerLoaded, viewMode, glbSrc]);
+
+    // Retry loading 3D model
+    const handleRetryModel = () => {
+        setModelError(null);
+        setModelDownloadProgress(0);
+        setIsModelReady(false);
+        if (modelViewerRef.current) {
+            const currentSrc = modelViewerRef.current.src;
+            modelViewerRef.current.src = '';
+            setTimeout(() => {
+                if (modelViewerRef.current) {
+                    modelViewerRef.current.src = currentSrc || glbSrc;
+                }
+            }, 100);
+        }
+    };
 
     // Clean up camera stream on unmount
     useEffect(() => {
@@ -502,6 +558,9 @@ export default function MobileView({ object }: { object: ARObject }) {
                                 'auto-rotate-delay': '1000',
                                 'shadow-intensity': viewMode === 'camera' ? '0.6' : '1.2',
                                 exposure: viewMode === 'camera' ? '1.05' : '1.0',
+                                loading: 'eager',
+                                reveal: 'auto',
+                                crossorigin: 'anonymous',
                                 style: {
                                     backgroundColor: viewMode === 'camera' ? 'transparent' : '#020617',
                                     width: '100%',
@@ -518,6 +577,61 @@ export default function MobileView({ object }: { object: ARObject }) {
                         {viewMode === 'camera' && (
                             <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10 opacity-30">
                                 <div className="w-52 h-52 border-2 border-dashed border-purple-400 rounded-full animate-pulse"></div>
+                            </div>
+                        )}
+
+                        {/* Progress Loading Overlay (Crucial for 20-38MB 3D files over mobile networks) */}
+                        {!isModelReady && !modelError && (
+                            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-sm p-6 text-center">
+                                <div className="relative mb-5">
+                                    <div className="w-16 h-16 rounded-3xl bg-purple-600/20 border-2 border-purple-500/40 flex items-center justify-center">
+                                        <Box className="w-8 h-8 text-purple-300 animate-pulse" />
+                                    </div>
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full animate-ping"></div>
+                                </div>
+                                <h3 className="text-base font-bold text-white mb-1">
+                                    {modelDownloadProgress > 0 ? `Mengunduh Model 3D (${modelDownloadProgress}%)` : 'Menyiapkan Model 3D...'}
+                                </h3>
+                                <p className="text-xs text-slate-400 max-w-xs mb-4">
+                                    {object.title}
+                                </p>
+                                <div className="w-48 h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-300 rounded-full"
+                                        style={{ width: `${Math.max(6, modelDownloadProgress)}%` }}
+                                    />
+                                </div>
+                                <span className="text-[10px] text-slate-500 mt-2">
+                                    Model detail tinggi sedang dimuat...
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Model Load Error & Retry Card */}
+                        {modelError && (
+                            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md p-6 text-center">
+                                <div className="w-16 h-16 rounded-3xl bg-red-900/30 border border-red-500/40 flex items-center justify-center text-red-400 mb-4 shadow-lg">
+                                    <AlertCircle className="w-8 h-8" />
+                                </div>
+                                <h3 className="text-lg font-bold text-white mb-2">Gagal Memuat Model 3D</h3>
+                                <p className="text-xs text-slate-300 mb-6 max-w-xs leading-relaxed">
+                                    {modelError}
+                                </p>
+                                <div className="flex flex-col w-full max-w-xs gap-2.5">
+                                    <button
+                                        onClick={handleRetryModel}
+                                        className="w-full py-3 px-5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                                    >
+                                        <RefreshCw className="w-4 h-4" />
+                                        <span>Coba Muat Ulang</span>
+                                    </button>
+                                    <button
+                                        onClick={handleCameraModeClick}
+                                        className="w-full py-2.5 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-purple-300 font-semibold text-xs transition-colors cursor-pointer"
+                                    >
+                                        Gunakan Mode Kamera
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>

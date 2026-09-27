@@ -26,5 +26,10 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict(!app()->isProduction());
 
         Vite::prefetch(concurrency: 3);
+
+        // Enforce HTTPS scheme in production or when behind an SSL-terminating reverse proxy
+        if (app()->isProduction() || request()->header('X-Forwarded-Proto') === 'https' || str_starts_with((string) config('app.url'), 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }

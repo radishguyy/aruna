@@ -182,4 +182,30 @@ Route::middleware('auth')->group(function () {
 Route::get('/ar/view/{slug}', [\App\Http\Controllers\ArController::class, 'show'])->name('ar.show');
 Route::get('/ar/{slug}', [\App\Http\Controllers\ArController::class, 'show'])->name('ar.direct');
 
+// 9. Static 3D Asset Route with strict MIME and CORS (Guarantees production availability across all web servers)
+Route::get('/3d/{filename}', function (string $filename) {
+    $path = public_path('3d/' . $filename);
+    if (!file_exists($path)) {
+        abort(404, '3D model file not found.');
+    }
+
+    $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    $mimeType = match ($extension) {
+        'glb' => 'model/gltf-binary',
+        'gltf' => 'model/gltf+json',
+        'usdz' => 'model/vnd.usdz+zip',
+        'obj' => 'model/obj',
+        default => 'application/octet-stream'
+    };
+
+    return response()->file($path, [
+        'Content-Type' => $mimeType,
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
+        'Access-Control-Allow-Headers' => '*',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+})->where('filename', '^[a-zA-Z0-9_\-\.]+$')->name('ar.asset');
+
 require __DIR__ . '/auth.php';
+

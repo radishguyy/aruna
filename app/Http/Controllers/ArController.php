@@ -53,13 +53,10 @@ class ArController extends Controller
     public function getAvailableObjects()
     {
         $path = public_path('3d');
-        if (!File::exists($path)) {
-            return [];
-        }
-
-        $files = File::files($path);
         $grouped = [];
+        $files = File::exists($path) ? File::files($path) : [];
 
+        // 1. Scan physical directory if files exist
         foreach ($files as $file) {
             $extension = strtolower($file->getExtension());
             if (in_array($extension, ['usdz', 'glb', 'gltf', 'obj'])) {
@@ -69,14 +66,20 @@ class ArController extends Controller
 
                 if (!isset($grouped[$slug])) {
                     $metadata = $this->getMetadataFor($slug);
+                    $relativeUrl = '/3d/' . $filename;
+                    $fullUrl = asset('3d/' . $filename);
+
                     $grouped[$slug] = [
                         'id' => $slug,
                         'title' => $metadata['title'] ?? ucwords(str_replace('_', ' ', $nameWithoutExt)),
                         'description' => $metadata['description'] ?? 'Jelajahi objek pembelajaran 3D ini dalam Augmented Reality.',
                         'formats' => [],
-                        'file_path' => asset('3d/' . $filename),
+                        'file_path' => $relativeUrl,
+                        'full_url' => $fullUrl,
                         'glb_path' => null,
+                        'glb_full_url' => null,
                         'usdz_path' => null,
+                        'usdz_full_url' => null,
                         'format' => $extension,
                         'educational_content' => $metadata['educational_content'] ?? [
                             'facts' => [
@@ -92,16 +95,61 @@ class ArController extends Controller
                 $grouped[$slug]['formats'][] = $extension;
 
                 if ($extension === 'glb' || $extension === 'gltf') {
-                    $grouped[$slug]['glb_path'] = asset('3d/' . $filename);
-                    $grouped[$slug]['file_path'] = asset('3d/' . $filename);
+                    $grouped[$slug]['glb_path'] = '/3d/' . $filename;
+                    $grouped[$slug]['glb_full_url'] = asset('3d/' . $filename);
+                    $grouped[$slug]['file_path'] = '/3d/' . $filename;
+                    $grouped[$slug]['full_url'] = asset('3d/' . $filename);
                     $grouped[$slug]['format'] = $extension;
                 } elseif ($extension === 'usdz') {
-                    $grouped[$slug]['usdz_path'] = asset('3d/' . $filename);
+                    $grouped[$slug]['usdz_path'] = '/3d/' . $filename;
+                    $grouped[$slug]['usdz_full_url'] = asset('3d/' . $filename);
                     if (empty($grouped[$slug]['glb_path'])) {
-                        $grouped[$slug]['file_path'] = asset('3d/' . $filename);
+                        $grouped[$slug]['file_path'] = '/3d/' . $filename;
+                        $grouped[$slug]['full_url'] = asset('3d/' . $filename);
                         $grouped[$slug]['format'] = $extension;
                     }
                 }
+            }
+        }
+
+        // 2. Ensure all items in ar_metadata.json are present even if file scanning failed
+        $allMetadata = $this->getAllMetadata();
+        $fallbackMap = [
+            'dirty-stones-pile' => ['glb' => 'Dirty_stones_pile.glb', 'usdz' => 'Dirty_stones_pile.usdz'],
+            'karakter-laki-pose-1' => ['glb' => 'karakter_laki_pose_1.glb'],
+            'karakter-laki-pose-2' => ['glb' => 'karakter_laki_pose_2.glb'],
+            'karakter-cewe-pose-1' => ['glb' => 'karakter_cewe_pose_1.glb'],
+            'karakter-cewe-pose-2' => ['glb' => 'karakter_cewe_pose_2.glb'],
+        ];
+
+        foreach ($allMetadata as $slug => $meta) {
+            if (!isset($grouped[$slug])) {
+                $filesForSlug = $fallbackMap[$slug] ?? ['glb' => str_replace('-', '_', $slug) . '.glb'];
+                $glbFile = $filesForSlug['glb'] ?? null;
+                $usdzFile = $filesForSlug['usdz'] ?? null;
+                $defaultFile = $glbFile ?: $usdzFile;
+
+                $grouped[$slug] = [
+                    'id' => $slug,
+                    'title' => $meta['title'] ?? ucwords(str_replace('-', ' ', $slug)),
+                    'description' => $meta['description'] ?? 'Jelajahi objek pembelajaran 3D ini dalam Augmented Reality.',
+                    'formats' => array_keys($filesForSlug),
+                    'file_path' => $defaultFile ? '/3d/' . $defaultFile : null,
+                    'full_url' => $defaultFile ? asset('3d/' . $defaultFile) : null,
+                    'glb_path' => $glbFile ? '/3d/' . $glbFile : null,
+                    'glb_full_url' => $glbFile ? asset('3d/' . $glbFile) : null,
+                    'usdz_path' => $usdzFile ? '/3d/' . $usdzFile : null,
+                    'usdz_full_url' => $usdzFile ? asset('3d/' . $usdzFile) : null,
+                    'format' => $glbFile ? 'glb' : ($usdzFile ? 'usdz' : 'glb'),
+                    'educational_content' => $meta['educational_content'] ?? [
+                        'facts' => [
+                            'Putar model untuk melihat dari segala sudut.',
+                            'Cubit (pinch) layar untuk memperbesar atau memperkecil.',
+                            'Ketuk tombol AR untuk menempatkan objek di ruanganmu.',
+                        ],
+                        'labels' => []
+                    ]
+                ];
             }
         }
 
@@ -114,13 +162,18 @@ class ArController extends Controller
         return $objects->firstWhere('id', $slug);
     }
 
-    private function getMetadataFor($slug)
+    private function getAllMetadata(): array
     {
         $metadataPath = resource_path('data/ar_metadata.json');
         if (File::exists($metadataPath)) {
-            $allMetadata = json_decode(File::get($metadataPath), true);
-            return $allMetadata[$slug] ?? null;
+            return json_decode(File::get($metadataPath), true) ?: [];
         }
-        return null;
+        return [];
+    }
+
+    private function getMetadataFor($slug)
+    {
+        $allMetadata = $this->getAllMetadata();
+        return $allMetadata[$slug] ?? null;
     }
 }
