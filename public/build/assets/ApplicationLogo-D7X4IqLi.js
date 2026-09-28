@@ -1,0 +1,1 @@
+import{j as t}from"./app-BA2J5j2x.js";function o(n){return t.jsx("svg",{...n,viewBox:"0 0 200 60",xmlns:"http://www.w3.org/2000/svg",children:t.jsx("text",{x:"50%",y:"50%",dominantBaseline:"middle",textAnchor:"middle",fontSize:"40",fontWeight:"900",fontFamily:"sans-serif",fill:"currentColor",children:"Aruna"})})}export{o as A};
