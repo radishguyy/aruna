@@ -160,8 +160,8 @@ export default function AdminDashboard({
           </div>
         </div>
 
-        {/* Revenue / Sales Analytics Section */}
-        <RevenueAnalytics initialData={revenueAnalytics} />
+        {/* Revenue / Sales Analytics Section - TEMPORARILY DISABLED */}
+        {/* <RevenueAnalytics initialData={revenueAnalytics} /> */}
 
         {/* User Subscription Timeline for Recent Users */}
         <div className="space-y-4">

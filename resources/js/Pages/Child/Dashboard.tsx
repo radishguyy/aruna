@@ -5,6 +5,8 @@ import { Link, router, Head } from '@inertiajs/react';
 import ChildLayout from '@/Layouts/ChildLayout';
 import Modal from '@/Components/Modal';
 import { QRCodeSVG } from 'qrcode.react';
+import SmartDigvi from '@/Components/demo/modules/SmartDigvi';
+import { mockData } from '@/data/mockData';
 
 interface Module {
   id: string;
@@ -76,15 +78,24 @@ export default function ChildDashboard({
   const activeChild: Child = (childProp as any)?.data || childProp || { id: '', nickname: 'Cilik', total_points: 0 };
   const categoriesList: Category[] = Array.isArray(categoriesProp) ? categoriesProp : ((categoriesProp as any)?.data || []);
   
-  // Extract all modules from all categories for flat displays
-  const allModules: Module[] = categoriesList.flatMap((cat: Category) => cat?.modules || []);
-  const digfoModules: Module[] = allModules.filter((m: Module) => m.type === 'digfo');
-  const digviModules: Module[] = allModules.filter((m: Module) => m.type === 'digvi');
-  const emodulModules: Module[] = allModules.filter((m: Module) => m.type === 'e-modul');
-
   const [selectedLockedModule, setSelectedLockedModule] = useState<Module | null>(null);
   const [selectedArForScan, setSelectedArForScan] = useState<ARObject | null>(null);
   const [qrCopied, setQrCopied] = useState(false);
+  const [activeDigvi, setActiveDigvi] = useState<Module | null>(null);
+
+  // Extract all modules from all categories for flat displays
+  const allModules: Module[] = categoriesList.flatMap((cat: Category) => cat?.modules || []);
+  const digfoModules: Module[] = allModules.filter((m: Module) => m.type === 'digfo');
+  // Use mock data for digvi modules
+  const digviModules: Module[] = mockData.modules
+    .filter((m: any) => m.type === 'digvi')
+    .map((m: any) => ({
+      ...m,
+      user_status: 'unstarted',
+      user_score: 0,
+      is_locked: m.is_premium && !has_active_subscription
+    })) as Module[];
+  const emodulModules: Module[] = allModules.filter((m: Module) => m.type === 'e-modul');
 
   // If redirected from backend due to accessing a locked module directly, trigger the prompt
   useEffect(() => {
@@ -105,6 +116,8 @@ export default function ChildDashboard({
   const handleModuleClick = (mod: Module) => {
     if (mod.is_locked) {
       setSelectedLockedModule(mod);
+    } else if (mod.type === 'digvi') {
+      setActiveDigvi(mod);
     } else {
       router.get(`/child/module/${mod.id}`);
     }
@@ -220,6 +233,23 @@ export default function ChildDashboard({
       </motion.div>
     );
   };
+
+  if (activeDigvi) {
+    return (
+      <div className="w-full h-full min-h-screen bg-white">
+        <Head title={activeDigvi.title} />
+        <SmartDigvi 
+          moduleId={activeDigvi.id} 
+          module={activeDigvi}
+          onBack={() => setActiveDigvi(null)} 
+          onComplete={(score) => {
+            // For mock data, we just go back on complete
+            setActiveDigvi(null);
+          }} 
+        />
+      </div>
+    );
+  }
 
   return (
     <ChildLayout>

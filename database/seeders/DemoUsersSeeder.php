@@ -332,6 +332,47 @@ class DemoUsersSeeder extends Seeder
             ]
         );
 
-        $this->command?->info("DemoUsersSeeder completed: 700 users created, 450 with subscription history, 446 active as of Sept 25, 2026. Target revenue Rp 22,750,000.");
+        // 5. Generate Child Profiles
+        $childrenToInsert = [];
+        $childNames = [
+            'Raka', 'Siti', 'Agus', 'Ayu', 'Rini', 'Dodi', 'Tari', 'Ari', 'Rika', 'Iwan', 
+            'Nina', 'Rudi', 'Lina', 'Doni', 'Susi', 'Farhan', 'Nisa', 'Rizky', 'Putri'
+        ];
+
+        // Ensure we hit exactly 705 children across 700 users
+        // Give 1 child to everyone, and a 2nd child to the first 5 premium users
+        $extraChildrenCount = 5;
+
+        foreach ($allDemoUsers as $user) {
+            $numChildren = 1;
+            if ($extraChildrenCount > 0 && $user->subscription_status === 'premium') {
+                $numChildren = 2;
+                $extraChildrenCount--;
+            }
+
+            for ($c = 0; $c < $numChildren; $c++) {
+                $childrenToInsert[] = [
+                    'id' => (string) Str::uuid(),
+                    'user_id' => $user->id,
+                    'nickname' => $childNames[array_rand($childNames)] . ' ' . rand(1, 99),
+                    'gender' => rand(0, 1) ? 'male' : 'female',
+                    'birth_date' => Carbon::now()->subYears(rand(3, 6))->subDays(rand(1, 365)),
+                    'total_points' => rand(0, 500),
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->created_at,
+                ];
+            }
+        }
+
+        foreach (array_chunk($childrenToInsert, 100) as $chunk) {
+            Child::insert($chunk);
+        }
+
+        $totalChildren = count($childrenToInsert);
+        if ($totalChildren < 705) {
+            throw new \Exception("Failed to generate at least 705 child profiles. Generated: $totalChildren");
+        }
+
+        $this->command?->info("DemoUsersSeeder completed: 700 users created, 450 with subscription history, $totalChildren child profiles. Target revenue Rp 22,750,000.");
     }
 }

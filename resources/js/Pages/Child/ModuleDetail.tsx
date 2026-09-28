@@ -30,13 +30,13 @@ export default function ModuleDetail({ child, module, progress }: Props) {
   };
 
   const handleComplete = (score: number) => {
-    router.post(`/child/module/${moduleData.id}/progress`, {
+    window.axios.post(`/child/module/${moduleData.id}/progress`, {
       status: 'completed',
       score: score
-    }, {
-      onSuccess: () => {
-        router.get('/child');
-      }
+    }).then(() => {
+      router.get('/child');
+    }).catch((error: any) => {
+      console.error("Error updating progress:", error);
     });
   };
 
