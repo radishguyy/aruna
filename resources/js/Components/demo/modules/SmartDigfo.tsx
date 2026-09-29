@@ -419,6 +419,15 @@ export default function SmartDigfo({ moduleId, module: moduleProp, onBack, onCom
                 case 'inner': shapeProps = { x: "35", y: "110", width: "30", height: "30", rx: "10" }; break;
                 case 'parent': shapeProps = { x: "20", y: "40", width: "30", height: "60", rx: "10" }; break;
                 case 'teacher': shapeProps = { x: "50", y: "40", width: "30", height: "60", rx: "10" }; break;
+                case 'hug': shapeProps = { cx: "50", cy: "65", r: "25" }; break;
+                case 'highfive': shapeProps = { x: "10", y: "65", width: "15", height: "15", rx: "7" }; break;
+                case 'stranger_hand': shapeProps = { cx: "20", cy: "80", r: "15" }; break;
+                case 'secret_mouth': shapeProps = { cx: "50", cy: "35", r: "5" }; break;
+                case 'mouth': shapeProps = { cx: "50", cy: "32", r: "4" }; break;
+                case 'bottom': shapeProps = { x: "40", y: "115", width: "20", height: "20", rx: "10" }; break;
+                case 'say_no': shapeProps = { cx: "65", cy: "25", r: "10" }; break;
+                case 'run': shapeProps = { x: "30", y: "140", width: "40", height: "15", rx: "7" }; break;
+                case 'tell_adult': shapeProps = { x: "70", y: "40", width: "20", height: "40", rx: "10" }; break;
                 default: shapeProps = { cx: "50", cy: "100", r: "10" };
               }
 

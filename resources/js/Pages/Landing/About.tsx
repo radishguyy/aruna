@@ -15,7 +15,7 @@ import {
   MessageSquare,
   Send,
 } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { Link, Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { mockData } from '@/data/mockData';
 import Glide from '@glidejs/glide';
@@ -50,6 +50,7 @@ export default function AboutPage() {
 
   return (
     <MainLayout>
+      <Head title="Tentang Kami - Aruna" />
       <div className="font-sans text-slate-800 bg-[#FAFCFF] min-h-screen selection:bg-orange-200 pb-24 overflow-x-hidden pt-12">
 
         {/* ================= 1. HERO SECTION ================= */}

@@ -115,7 +115,6 @@ class ArController extends Controller
         // 2. Ensure all items in ar_metadata.json are present even if file scanning failed
         $allMetadata = $this->getAllMetadata();
         $fallbackMap = [
-            'dirty-stones-pile' => ['glb' => 'Dirty_stones_pile.glb', 'usdz' => 'Dirty_stones_pile.usdz'],
             'karakter-laki-pose-1' => ['glb' => 'karakter_laki_pose_1.glb'],
             'karakter-laki-pose-2' => ['glb' => 'karakter_laki_pose_2.glb'],
             'karakter-cewe-pose-1' => ['glb' => 'karakter_cewe_pose_1.glb'],

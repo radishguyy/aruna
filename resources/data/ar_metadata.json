@@ -1,21 +1,4 @@
 {
-    "dirty-stones-pile": {
-        "title": "Dirty Stones Pile",
-        "description": "An interactive 3D scan of a pile of dirty stones, showing real-world textures and geometric complexities. Ideal for geology or 3D scanning education.",
-        "educational_content": {
-            "facts": [
-                "Photogrammetry was used to capture these realistic textures.",
-                "Notice the variation in color and size of the individual stones.",
-                "In AR mode, try placing the stones on your desk."
-            ],
-            "labels": [
-                {
-                    "name": "Texture Detail",
-                    "description": "Observe the muddy residue baked onto the top layer."
-                }
-            ]
-        }
-    },
     "karakter-laki-pose-1": {
         "title": "Area Aman Cowok 1",
         "description": "Pelajari area aman pada tubuh anak laki-laki dengan model 3D interaktif. Kenali bagian mana yang boleh disentuh dan tidak boleh disentuh.",

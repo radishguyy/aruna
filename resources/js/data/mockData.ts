@@ -204,6 +204,75 @@ export const mockData = {
       order: 12,
     },
     {
+      id: "m-13",
+      category_id: 1,
+      title: "Sentuhan Kasih Sayang",
+      slug: "sentuhan-kasih-sayang",
+      type: "digfo",
+      difficulty_level: 1,
+      is_premium: false,
+      content_data: {
+        description: "Contoh sentuhan aman yang membuat kita merasa disayangi.",
+        bodyParts: [
+          { id: "hug", label: "Pelukan", isPrivate: false, tooltip: "Pelukan dari orang tua atau keluarga terdekat yang membuat merasa aman dan hangat." },
+          { id: "highfive", label: "Tos Tangan", isPrivate: false, tooltip: "Sentuhan aman saat bermain atau merayakan sesuatu dengan teman." }
+        ]
+      },
+      order: 13,
+    },
+    {
+      id: "m-14",
+      category_id: 2,
+      title: "Waspada Sentuhan",
+      slug: "waspada-sentuhan",
+      type: "digfo",
+      difficulty_level: 2,
+      is_premium: true,
+      content_data: {
+        description: "Mengenali sentuhan yang tidak aman dan meresponsnya.",
+        bodyParts: [
+          { id: "stranger_hand", label: "Tangan Asing", isPrivate: true, tooltip: "Sentuhan dari orang yang tidak dikenal atau membuatmu tidak nyaman adalah sentuhan tidak aman." },
+          { id: "secret_mouth", label: "Rahasia Buruk", isPrivate: true, tooltip: "Seseorang menyuruhmu merahasiakan sentuhannya? Itu rahasia buruk! Segera laporkan." }
+        ]
+      },
+      order: 14,
+    },
+    {
+      id: "m-15",
+      category_id: 1,
+      title: "Zona Pribadi Lanjutan",
+      slug: "zona-pribadi-lanjutan",
+      type: "digfo",
+      difficulty_level: 2,
+      is_premium: false,
+      content_data: {
+        description: "Mengenal lebih dalam area yang wajib dilindungi.",
+        bodyParts: [
+          { id: "mouth", label: "Bibir", isPrivate: true, tooltip: "Bibir adalah area pribadimu. Tidak boleh disentuh oleh orang lain." },
+          { id: "bottom", label: "Pantat", isPrivate: true, tooltip: "Pantat adalah area pribadi yang tertutup celana. Sangat rahasia dan tidak boleh disentuh!" }
+        ]
+      },
+      order: 15,
+    },
+    {
+      id: "m-16",
+      category_id: 2,
+      title: "Tiga Langkah Pahlawan",
+      slug: "tiga-langkah-pahlawan",
+      type: "digfo",
+      difficulty_level: 2,
+      is_premium: true,
+      content_data: {
+        description: "Cara menghadapi bahaya: Tolak, Lari, Lapor!",
+        bodyParts: [
+          { id: "say_no", label: "Katakan TIDAK", isPrivate: false, tooltip: "Gunakan suaramu untuk berteriak atau berkata TIDAK dengan lantang." },
+          { id: "run", label: "Lari Menjauh", isPrivate: false, tooltip: "Segera lari mencari tempat yang aman atau ramai orang." },
+          { id: "tell_adult", label: "Lapor Orang Dewasa", isPrivate: false, tooltip: "Ceritakan pada orang tua, guru, atau satpam tentang apa yang terjadi." }
+        ]
+      },
+      order: 16,
+    },
+    {
       id: "digvi-1",
       category_id: 2,
       title: "Aku Berani Bercerita",
